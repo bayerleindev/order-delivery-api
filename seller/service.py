@@ -42,7 +42,7 @@ class SellerService:
         return result
 
     def accept_or_reject_order(self, id: str, order_number: str, status: str):
-        UpdateOrder().execute(Input(order_number, status))
+        return UpdateOrder().execute(Input(order_number, status))
 
     def save(self, **kwargs):
         try:

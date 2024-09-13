@@ -4,6 +4,7 @@ from flask_restful import Api, Resource, abort
 from seller.exception import SellerException
 
 from seller.service import SellerService
+from seller.usecases.accept_or_reject_order import AcceptOrRejectOrder
 from seller.usecases.get_items import GetItems
 from seller.usecases.save_item import SaveItem
 
@@ -42,7 +43,16 @@ class SellerOrders(Resource):
     @jwt_required()
     def patch(self, order_number: str):
         status = request.get_json()["status"]
-        service.accept_or_reject_order(get_jwt_identity(), order_number, status)
+        return (
+            AcceptOrRejectOrder().execute(
+                {
+                    "seller_id": get_jwt_identity(),
+                    "status": status,
+                    "order_number": order_number,
+                }
+            ),
+            201,
+        )
 
     @jwt_required()
     def get(self):
