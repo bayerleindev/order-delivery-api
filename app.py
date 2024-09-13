@@ -1,8 +1,9 @@
-from flask import Flask
+from flask import Flask, Response
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_restful import Api
-
+from middlewares.after_request_handler import AfterRequestHandler
+from middlewares.before_request_handler import BeforeRequestHandler
 from order import resource as order_resource
 from courier import resource as courier_resource
 from route import resource as route_resource
@@ -36,6 +37,19 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
     "max_overflow": 5,
     "pool_pre_ping": False,
 }
+
+
+@app.before_request
+def before_request_callback():
+    BeforeRequestHandler.handle()
+
+
+@app.after_request
+def after_request_callback(response: Response):
+    AfterRequestHandler.handle(response)
+    return response
+
+
 db.init_app(app)
 migrate.init_app(app, db)
 
@@ -45,9 +59,3 @@ route_resource.init(api)
 auth_resource.init(api)
 seller_resource.init(api)
 consumer_resource.init(api)
-
-
-@app.after_request
-def after_request_callback(response):
-    db.session.commit()
-    return response
