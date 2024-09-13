@@ -8,6 +8,7 @@ from route.exception import RouteException
 from route.service import RouteService
 from route.usecases.add_order_to_route import AddOrderToRoute
 from route.usecases.get_latest_route import GetLatestRoute
+from route.usecases.remove_order_from_route import RemoveOrderFromRoute
 from route.usecases.update_route import UpdateRoute
 
 service = RouteService()
@@ -67,7 +68,12 @@ class RouteList(Resource):
     def delete(self, id):
         args = self.parser.parse_args(strict=True)
         try:
-            return service.remove_order(id, args["order"]).to_json()
+            return (
+                RemoveOrderFromRoute()
+                .execute(route_id=id, order_number=args["order"])
+                .to_json(),
+                200,
+            )
         except RouteException as e:
             abort(500, message=e.message)
         finally:

@@ -1,9 +1,21 @@
 from uuid import UUID
 from db_config import db
+from order.model import OrderHistoryModel
 from route.model import RouteModel, RouteOrderModel
 
 
 class RouteRepository:
+
+    def remove(self, **kwargs):
+        db.session.query(RouteOrderModel).filter_by(
+            route_id=kwargs["route_id"]
+        ).filter_by(order_number=kwargs["order_number"]).delete()
+
+        db.session.query(OrderHistoryModel).filter(
+            OrderHistoryModel.number == kwargs["order_number"]
+        ).delete()
+
+        db.session.commit()
 
     def save_or_update(self, route: RouteModel):
         db.session.add(route)
