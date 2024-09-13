@@ -9,16 +9,17 @@ from route.exception import RouteException
 from route.model import RouteModel, RouteOrderModel
 from route.route import Route
 from route.usecases.get_route import GetRoute
+from route.usecases.get_route_orders import GetRouteOrders
 
 
 class RouteService:
 
-    def load_orders(self, route_id: UUID):
-        return db.session.query(RouteOrderModel).filter_by(route_id=route_id).all()
-
     def get_latest_route(self, courier: UUID):
+
         route = GetRoute().execute(courier_id=courier)
-        orders = [order.order_number for order in self.load_orders(route.id)]
+        orders = [
+            order.order_number for order in GetRouteOrders().execute(route_id=route.id)
+        ]
         return Route(
             route.id, route.status, [LoadOrder().execute(order) for order in orders]
         )
@@ -53,7 +54,10 @@ class RouteService:
 
         if route and route.status == "NEW":
             self.remove_order_from_route(route.id, order_number)
-            orders = [order.order_number for order in self.load_orders(route.id)]
+            orders = [
+                order.order_number
+                for order in GetRouteOrders().execute(route_id=route.id)
+            ]
             return Route(
                 route.id, route.status, [LoadOrder().execute(order) for order in orders]
             )
@@ -73,7 +77,9 @@ class RouteService:
         if route.status != "NEW":
             raise RouteException("Finish your opened route before creating a new one.")
 
-        orders = [order.order_number for order in self.load_orders(route.id)]
+        orders = [
+            order.order_number for order in GetRouteOrders().execute(route_id=route.id)
+        ]
 
         if order_number in orders:
             return Route(
@@ -90,14 +96,16 @@ class RouteService:
 
     def start_route(self, route: RouteModel):
         if route.status == "IN_TRAFFIC":
-            return Route(route.id, route.status, self.load_orders(route.id))
+            return Route(
+                route.id, route.status, GetRouteOrders().execute(route_id=route.id)
+            )
 
         if route.status != "NEW":
             raise RouteException(
                 "Route in status {} cannot be started.".format(route.status)
             )
 
-        route_orders = self.load_orders(route.id)
+        route_orders = GetRouteOrders().execute(route_id=route.id)
 
         if len(route_orders) == 0:
             raise RouteException("Add order to start route.")
@@ -120,7 +128,7 @@ class RouteService:
                 "Route in status {} cannot be finished.".format(route.status)
             )
 
-        route_orders = self.load_orders(route.id)
+        route_orders = GetRouteOrders().execute(route_id=route.id)
 
         for route_order in route_orders:
             order = FilterOrder().execute(number=route_order.order_number).first()
@@ -158,7 +166,7 @@ class RouteService:
                 route.status,
                 [
                     LoadOrder().execute(order.order_number)
-                    for order in self.load_orders(route.id)
+                    for order in GetRouteOrders().execute(route_id=route.id)
                 ],
             )
 
