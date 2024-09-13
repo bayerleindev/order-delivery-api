@@ -8,22 +8,16 @@ from order.usecases.update_order import Input, UpdateOrder
 from route.exception import RouteException
 from route.model import RouteModel, RouteOrderModel
 from route.route import Route
+from route.usecases.get_route import GetRoute
 
 
 class RouteService:
-    def get_route(self, **kwargs):
-        return (
-            db.session.query(RouteModel)
-            .filter_by(**kwargs)
-            .order_by(RouteModel.created_at.desc())
-            .first()
-        )
 
     def load_orders(self, route_id: UUID):
         return db.session.query(RouteOrderModel).filter_by(route_id=route_id).all()
 
     def get_latest_route(self, courier: UUID):
-        route = self.get_route(courier_id=courier)
+        route = GetRoute().execute(courier_id=courier)
         orders = [order.order_number for order in self.load_orders(route.id)]
         return Route(
             route.id, route.status, [LoadOrder().execute(order) for order in orders]
@@ -55,7 +49,7 @@ class RouteService:
         return route
 
     def remove_order(self, route_id: UUID, order_number: str):
-        route = self.get_route(id=route_id)
+        route = GetRoute().execute(id=route_id)
 
         if route and route.status == "NEW":
             self.remove_order_from_route(route.id, order_number)
@@ -68,7 +62,7 @@ class RouteService:
         )
 
     def add_order_to_active_route(self, courier_id: UUID, order_number: str):
-        route = self.get_route(courier_id=courier_id)
+        route = GetRoute().execute(courier_id=courier_id)
 
         if not route or route.status in ["FINALIZED", "ABORTED"]:
             route = self.save(courier_id=courier_id, id=id)
@@ -149,8 +143,8 @@ class RouteService:
         status = kwargs["status"]
         courier = kwargs["courier"]
 
-        route = self.get_route(courier_id=courier)
-        # route = self.get_route(id=id)
+        route = GetRoute().execute(courier_id=courier)
+        # route = GetRoute().execute(id=id)
 
         if not route:
             raise RouteException("Route not found.")
