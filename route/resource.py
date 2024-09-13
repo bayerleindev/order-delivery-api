@@ -4,14 +4,10 @@ from flask_restful import Api, Resource, abort, reqparse
 from order.exception import OrderException
 from route.exception import RouteException
 
-
-from route.service import RouteService
 from route.usecases.add_order_to_route import AddOrderToRoute
 from route.usecases.get_latest_route import GetLatestRoute
 from route.usecases.remove_order_from_route import RemoveOrderFromRoute
 from route.usecases.update_route import UpdateRoute
-
-service = RouteService()
 
 
 class Route(Resource):

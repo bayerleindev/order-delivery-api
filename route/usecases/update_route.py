@@ -81,7 +81,6 @@ class UpdateRoute:
             )
 
         route.status = "IN_TRAFFIC"
-        # db.session.commit()
         self.repository.save_or_update(route)
         return Route(route.id, route.status, orders)
 
@@ -103,7 +102,6 @@ class UpdateRoute:
                 )
 
             route.status = "FINALIZED"
-            # db.session.commit()
             self.repository.save_or_update(route)
             return Route(
                 route.id,

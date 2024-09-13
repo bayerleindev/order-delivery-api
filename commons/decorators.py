@@ -4,11 +4,8 @@ from flask import request
 from flask_restful import abort
 from flask_jwt_extended import get_jwt_identity
 
-from route.service import RouteService
 from route.usecases.get_route import GetRoute
 from route.usecases.get_route_orders import GetRouteOrders
-
-route_service = RouteService()
 
 
 def check_order_in_route(func):
