@@ -3,15 +3,12 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_restful import Api, Resource, abort
 from seller.exception import SellerException
 
-from seller.service import SellerService
 from seller.usecases.accept_or_reject_order import AcceptOrRejectOrder
 from seller.usecases.create_seller import CreateSeller
 from seller.usecases.get_items import GetItems
 from seller.usecases.get_orders import GetOrders
 from seller.usecases.filter_sellers import FilterSellers
 from seller.usecases.save_item import SaveItem
-
-service = SellerService()
 
 
 class Seller(Resource):
@@ -30,7 +27,11 @@ class SellerList(Resource):
             abort(500, message=e.message)
 
     def get(self):
-        return FilterSellers().execute(None)
+        args = request.args
+        kwargs = {}
+        for k, v in args.items():
+            kwargs.update({k: v})
+        return FilterSellers().execute(**kwargs)
 
 
 class ItemsList(Resource):
@@ -46,22 +47,21 @@ class ItemsList(Resource):
 class SellerOrders(Resource):
     @jwt_required()
     def patch(self, order_number: str):
-        status = request.get_json()["status"]
-        return (
-            AcceptOrRejectOrder().execute(
-                {
-                    "seller_id": get_jwt_identity(),
-                    "status": status,
-                    "order_number": order_number,
-                }
-            ),
-            201,
-        )
+        try:
+            status = request.get_json()["status"]
+            result = AcceptOrRejectOrder().execute(
+                seller_id=get_jwt_identity(),
+                status=status,
+                order_number=order_number,
+            )
+            return result, 201
+        except SellerException as error:
+            abort(500, message=error.message)
 
     @jwt_required()
     def get(self):
         try:
-            return GetOrders().execute({"seller_id": get_jwt_identity()})
+            return GetOrders().execute(seller_id=get_jwt_identity())
         except Exception as e:
             print(e)
         abort(403)

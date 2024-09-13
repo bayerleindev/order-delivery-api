@@ -21,9 +21,7 @@ class UpdateOrder:
         self.repository = OrderRepository()
 
     def execute(self, input: Input):
-        order = self.repository.filter(
-            number=input.order_number
-        ).first()  # db.session.query(OrderModel).filter_by(number=number).first()
+        order = self.repository.filter(number=input.order_number).first()
 
         if not order:
             raise OrderException("Order '{}' not found".format(input.order_number))

@@ -18,7 +18,7 @@ class AcceptOrRejectOrder:
 
         order = FilterOrder().execute(number=order_number).first()
 
-        if order.seller_id != seller_id:
+        if not order or str(order.seller_id) != str(seller_id):
             raise SellerException("Order {} not found.".format(order_number))
 
         return UpdateOrder().execute(Input(order_number, status))
