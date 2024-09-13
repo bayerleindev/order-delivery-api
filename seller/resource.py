@@ -4,6 +4,7 @@ from flask_restful import Api, Resource, abort
 from seller.exception import SellerException
 
 from seller.service import SellerService
+from seller.usecases.save_item import SaveItem
 
 service = SellerService()
 
@@ -27,7 +28,7 @@ class SellerList(Resource):
 class ItemsList(Resource):
     @jwt_required()
     def post(self):
-        service.save_item(get_jwt_identity(), items=request.get_json())
+        SaveItem().execute(get_jwt_identity(), items=request.get_json())
         return {}, 201
 
     @jwt_required(optional=True)
