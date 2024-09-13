@@ -1,6 +1,8 @@
+from datetime import datetime
 from order.usecases.load_order import LoadOrder
 from order.usecases.update_order import Input, UpdateOrder
 from route.exception import RouteException
+from route.model import RouteModel
 from route.repository import RouteRepository
 from route.route import Route
 from route.usecases.get_route import GetRoute
@@ -17,7 +19,9 @@ class AddOrderToRoute:
         route = GetRoute().execute(courier_id=kwargs["courier"])
 
         if not route or route.status in ["FINALIZED", "ABORTED"]:
-            route = self.save(courier_id=kwargs["courier"], id=id)
+            route = self.repository.save_or_update(
+                RouteModel(kwargs["courier"], "NEW", datetime.now(), id)
+            )
 
         if str(route.courier_id) != str(kwargs["courier"]):
             raise RouteException("Route not found.")
