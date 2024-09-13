@@ -1,0 +1,33 @@
+from uuid import UUID
+from flask import request
+from flask_restful import Api, Resource
+from consumer.usecases.create_user import CreateUser, Input
+from order.usecases.filter_order import FilterOrder
+from order.usecases.load_order import LoadOrder
+
+
+class ConsumerList(Resource):
+    def post(self):
+        body = request.get_json()
+        CreateUser().execute(
+            Input(
+                document=body.get("document"),
+                name=body.get("name"),
+                email=body.get("email"),
+                phone=body.get("phone"),
+            )
+        )
+
+
+class ConsumerOrders(Resource):
+
+    def get(self, consumer_id: UUID):
+        return [
+            LoadOrder().execute(order.number)
+            for order in FilterOrder().execute(consumer_id=consumer_id)
+        ]
+
+
+def init(api: Api):
+    api.add_resource(ConsumerOrders, "/consumers/<string:consumer_id>/orders")
+    api.add_resource(ConsumerList, "/consumers/")

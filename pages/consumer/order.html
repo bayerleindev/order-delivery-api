@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acompanhamento de Pedido com API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        header {
+            background-color: #4caf50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 24px;
+        }
+        .container {
+            padding: 20px;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .breadcrumb {
+            display: flex;
+            justify-content: space-between;
+            padding: 0;
+            list-style: none;
+            margin: 0;
+        }
+        .breadcrumb li {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background-color: #ddd;
+            position: relative;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .breadcrumb li.active {
+            background-color: #4caf50;
+            color: white;
+        }
+        .breadcrumb li::after {
+            content: '>';
+            position: absolute;
+            top: 50%;
+            right: -15px;
+            transform: translateY(-50%);
+            font-size: 18px;
+            color: #333;
+        }
+        .breadcrumb li:last-child::after {
+            content: '';
+        }
+    </style>
+</head>
+<body>
+
+<header>Acompanhamento de Pedido</header>
+
+<div class="container">
+    <select id="orderSelect" onchange="updateOrderStatus()">
+        <option value="" disabled selected>Carregando pedidos...</option>
+    </select>
+
+    <ul class="breadcrumb">
+        <li id="statusAccepted">Aceito</li>
+        <li id="statusDelivering">Entregador com outro pedido</li>
+        <li id="statusInDelivery">Entrega Iniciada</li>
+        <li id="statusCompleted">Entregue/Cancelado</li>
+    </ul>
+</div>
+
+<script>
+
+    setInterval(load, 4 * 1000)
+    let orders = {};
+
+    async function load() {
+        const ordersData = await fetchOrdersFromAPI();
+
+        ordersData.forEach(order => {
+            orders[order.number] = order.status; // Armazena o status por ID do pedido
+        });
+
+        updateOrderStatus()
+
+        console.log(ordersData)
+    }
+
+    // Simula uma chamada à API para obter os pedidos
+    async function fetchOrdersFromAPI() {
+        let orders = []
+        return await fetch(`http://127.0.0.1:5151/consumers/e97a5fd6-fd5c-4c86-a04c-aa361d262971/orders`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data =>  data)
+        .catch(error => console.error(error));
+    }
+
+    // Atualiza a lista de pedidos no select
+    async function loadOrders() {
+        const ordersData = await fetchOrdersFromAPI();
+        const orderSelect = document.getElementById('orderSelect');
+        orderSelect.innerHTML = '<option value="" disabled selected>Selecione um pedido</option>';
+
+        // Preenche o select com os pedidos da API
+        ordersData.forEach(order => {
+            const option = document.createElement('option');
+            option.value = order.number;
+            option.textContent = order.number;
+            orderSelect.appendChild(option);
+            orders[order.number] = order.status; // Armazena o status por ID do pedido
+        });
+    }
+
+    // Atualiza o status do pedido de acordo com a seleção
+    function updateOrderStatus() {
+        const orderId = document.getElementById('orderSelect').value;
+        const status = orders[orderId];
+
+        resetBreadcrumb();
+
+        if (status === 'ACCEPTED') {
+            document.getElementById('statusAccepted').classList.add('active');
+        } else if (status === 'IN_TRANSIT') {
+            document.getElementById('statusAccepted').classList.add('active');
+            document.getElementById('statusDelivering').classList.add('active');
+        } else if (status === 'ORDER_IN_TRANSIT' || status === 'ARRIVED') {
+            document.getElementById('statusAccepted').classList.add('active');
+            document.getElementById('statusDelivering').classList.add('active');
+            document.getElementById('statusInDelivery').classList.add('active');
+        } else if (status === 'DELIVERED' || status === 'CANCELLED') {
+            document.getElementById('statusAccepted').classList.add('active');
+            document.getElementById('statusDelivering').classList.add('active');
+            document.getElementById('statusInDelivery').classList.add('active');
+            document.getElementById('statusCompleted').classList.add('active');
+        }
+    }
+
+    // Função para resetar o breadcrumb
+    function resetBreadcrumb() {
+        document.getElementById('statusAccepted').classList.remove('active');
+        document.getElementById('statusDelivering').classList.remove('active');
+        document.getElementById('statusInDelivery').classList.remove('active');
+        document.getElementById('statusCompleted').classList.remove('active');
+    }
+
+    // Carrega os pedidos da API ao inicializar a página
+    window.onload = async function() {
+        await loadOrders();
+    };
+</script>
+
+</body>
+</html>
