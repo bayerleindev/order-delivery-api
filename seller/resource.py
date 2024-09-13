@@ -6,6 +6,7 @@ from seller.exception import SellerException
 from seller.service import SellerService
 from seller.usecases.accept_or_reject_order import AcceptOrRejectOrder
 from seller.usecases.get_items import GetItems
+from seller.usecases.get_orders import GetOrders
 from seller.usecases.save_item import SaveItem
 
 service = SellerService()
@@ -57,8 +58,7 @@ class SellerOrders(Resource):
     @jwt_required()
     def get(self):
         try:
-            identity = get_jwt_identity()
-            return service.get_orders(identity)
+            return GetOrders().execute({"seller_id": get_jwt_identity()})
         except Exception as e:
             print(e)
         abort(403)
