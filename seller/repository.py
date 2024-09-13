@@ -6,6 +6,10 @@ from seller.model import SellerModel
 
 class SellerRepository:
 
+    def add_seller(self, seller: SellerModel):
+        db.session.add(seller)
+        db.session.commit()
+
     def get_sellers(self, **kwargs):
         if kwargs:
             return db.session.query(SellerModel).filter_by(**kwargs).all()

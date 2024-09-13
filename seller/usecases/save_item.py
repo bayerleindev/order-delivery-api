@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from order.model import Item
-from seller.usecases.repository import SellerRepository
+from seller.repository import SellerRepository
 
 
 class SaveItem:

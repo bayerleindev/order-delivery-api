@@ -1,4 +1,4 @@
-from seller.usecases.repository import SellerRepository
+from seller.repository import SellerRepository
 
 
 class GetItems:

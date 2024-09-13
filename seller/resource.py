@@ -5,6 +5,7 @@ from seller.exception import SellerException
 
 from seller.service import SellerService
 from seller.usecases.accept_or_reject_order import AcceptOrRejectOrder
+from seller.usecases.create_seller import CreateSeller
 from seller.usecases.get_items import GetItems
 from seller.usecases.get_orders import GetOrders
 from seller.usecases.filter_sellers import FilterSellers
@@ -21,7 +22,10 @@ class SellerList(Resource):
     def post(self):
         try:
             body = request.get_json()
-            return service.save(**body).to_json()
+            return (
+                CreateSeller().execute(**body).to_json(),
+                201,
+            )
         except SellerException as e:
             abort(500, message=e.message)
 
