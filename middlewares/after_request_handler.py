@@ -8,6 +8,5 @@ class AfterRequestHandler:
         if response and response.status_code < 500:
             db_session.commit()
         else:
-            print("ROLLBACK AGORA")
             db_session.rollback()
         db_session.remove()
