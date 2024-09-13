@@ -14,7 +14,7 @@ class RemoveOrderFromRoute:
         self.repository = RouteRepository()
 
     def execute(self, **kwargs):
-        route = GetRoute().execute(id=kwargs["route_id"])
+        route = GetRoute().execute(courier_id=kwargs["courier_id"])
 
         if route and route.status == "NEW":
             self.remove(kwargs["order_number"], route.id)

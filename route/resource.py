@@ -39,11 +39,26 @@ class Route(Resource):
 
 
 class RouteOrders(Resource):
+
+    @jwt_required()
+    def delete(self):
+        try:
+            body = request.get_json()
+            return (
+                RemoveOrderFromRoute()
+                .execute(courier_id=get_jwt_identity(), order_number=body["order"])
+                .to_json(),
+                200,
+            )
+        except RouteException as e:
+            abort(500, message=e.message)
+        finally:
+            print("========== LOG ==========")
+
     @jwt_required()
     def post(self):
         try:
             body = request.get_json()
-
             return (
                 AddOrderToRoute()
                 .execute(courier=get_jwt_identity(), order_number=body["order"])
@@ -63,21 +78,6 @@ class RouteList(Resource):
     parser.add_argument(
         "order", required=True, type=str, help="Order number is required"
     )
-
-    @jwt_required()
-    def delete(self, id):
-        args = self.parser.parse_args(strict=True)
-        try:
-            return (
-                RemoveOrderFromRoute()
-                .execute(route_id=id, order_number=args["order"])
-                .to_json(),
-                200,
-            )
-        except RouteException as e:
-            abort(500, message=e.message)
-        finally:
-            print("========== LOG ==========")
 
 
 def init(api: Api):

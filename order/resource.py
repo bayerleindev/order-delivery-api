@@ -51,7 +51,7 @@ class Order(Resource):
         abort(404, message="Order not found.")
 
     @jwt_required()
-    @check_order_in_route
+    @check_order_in_route  # TODO move this to route domain
     def patch(self, number):
         try:
             args = self.parser.parse_args(strict=True)

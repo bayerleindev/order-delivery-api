@@ -20,7 +20,7 @@ class AddOrderToRoute:
 
         if not route or route.status in ["FINALIZED", "ABORTED"]:
             route = self.repository.save_or_update(
-                RouteModel(kwargs["courier"], "NEW", datetime.now(), id)
+                RouteModel(kwargs["courier"], "NEW", datetime.now())
             )
 
         if str(route.courier_id) != str(kwargs["courier"]):

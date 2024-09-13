@@ -46,5 +46,8 @@ auth_resource.init(api)
 seller_resource.init(api)
 consumer_resource.init(api)
 
-# if __name__ == '__main__':
-#     mongo.db.orders.find
+
+@app.after_request
+def after_request_callback(response):
+    db.session.commit()
+    return response
