@@ -7,6 +7,7 @@ from seller.service import SellerService
 from seller.usecases.accept_or_reject_order import AcceptOrRejectOrder
 from seller.usecases.get_items import GetItems
 from seller.usecases.get_orders import GetOrders
+from seller.usecases.filter_sellers import FilterSellers
 from seller.usecases.save_item import SaveItem
 
 service = SellerService()
@@ -25,7 +26,7 @@ class SellerList(Resource):
             abort(500, message=e.message)
 
     def get(self):
-        return service.get_sellers()
+        return FilterSellers().execute(None)
 
 
 class ItemsList(Resource):
