@@ -5,6 +5,9 @@ from route.model import RouteModel, RouteOrderModel
 
 class RouteRepository:
 
+    def update_route(self, route: RouteModel):
+        db.session.merge(route)
+
     def link_order_to_route(self, route_id: UUID, order_number: str):
         route_order = RouteOrderModel(order_number, route_id)
         db.session.add(route_order)

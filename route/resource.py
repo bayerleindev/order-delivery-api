@@ -8,6 +8,7 @@ from route.exception import RouteException
 from route.service import RouteService
 from route.usecases.add_order_to_route import AddOrderToRoute
 from route.usecases.get_latest_route import GetLatestRoute
+from route.usecases.update_route import UpdateRoute
 
 service = RouteService()
 
@@ -27,7 +28,7 @@ class Route(Resource):
         try:
             args = self.parser.parse_args(strict=True)
             args["courier"] = get_jwt_identity()
-            return service.update_status(**args).to_json(), 200
+            return UpdateRoute().execute(**args).to_json(), 200
         except RouteException as e:
             abort(500, message=e.message)
         except OrderException as e:
