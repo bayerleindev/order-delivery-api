@@ -38,7 +38,6 @@ class ItemsList(Resource):
         return GetItems().execute(seller_id=id)
 
 
-
 class SellerOrders(Resource):
     @jwt_required()
     def patch(self, order_number: str):

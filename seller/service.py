@@ -1,9 +1,8 @@
 from datetime import datetime, timedelta
-from uuid import UUID
 from sqlalchemy.exc import IntegrityError
 
 from auth.model import AuthModel, Role
-from order.model import Item, OrderModel
+from order.model import OrderModel
 from order.usecases.filter_order import FilterOrder
 from order.usecases.load_order import LoadOrder
 from order.usecases.update_order import Input, UpdateOrder
