@@ -28,8 +28,7 @@ class SellerList(Resource):
 class ItemsList(Resource):
     @jwt_required()
     def post(self):
-        SaveItem().execute(get_jwt_identity(), items=request.get_json())
-        return {}, 201
+        return SaveItem().execute(get_jwt_identity(), items=request.get_json()), 201
 
     @jwt_required(optional=True)
     def get(self, id: str = None):

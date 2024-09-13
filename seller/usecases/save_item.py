@@ -11,4 +11,5 @@ class SaveItem:
     
     def execute(self, seller_id: UUID, **kwargs):
         items = [Item(seller_id=seller_id, **item) for item in kwargs["items"]]
-        self.repository.save_all_items(items)            
+        self.repository.save_all_items(items)
+        return [item.to_json() for item in items]         

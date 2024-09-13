@@ -45,12 +45,6 @@ class SellerService:
     def accept_or_reject_order(self, id: str, order_number: str, status: str):
         UpdateOrder().execute(Input(order_number, status))
 
-    def save_item(self, seller_id: str, **kwargs):
-        for item_dict in kwargs["items"]:
-            item = Item(seller_id=seller_id, **item_dict)
-            db.session.add(item)
-        db.session.commit()
-
     def save(self, **kwargs):
         try:
             with db.session.begin():
