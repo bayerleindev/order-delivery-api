@@ -6,6 +6,7 @@ from route.exception import RouteException
 
 
 from route.service import RouteService
+from route.usecases.get_latest_route import GetLatestRoute
 
 service = RouteService()
 
@@ -18,7 +19,7 @@ class Route(Resource):
     @jwt_required()
     def get(self, id=None):
         courier = get_jwt_identity()
-        return service.get_latest_route(courier).to_json(), 200
+        return GetLatestRoute().execute(courier=courier).to_json(), 200
 
     @jwt_required()
     def patch(self):

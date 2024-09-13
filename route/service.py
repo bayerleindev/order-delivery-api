@@ -14,16 +14,6 @@ from route.usecases.get_route_orders import GetRouteOrders
 
 class RouteService:
 
-    def get_latest_route(self, courier: UUID):
-
-        route = GetRoute().execute(courier_id=courier)
-        orders = [
-            order.order_number for order in GetRouteOrders().execute(route_id=route.id)
-        ]
-        return Route(
-            route.id, route.status, [LoadOrder().execute(order) for order in orders]
-        )
-
     def link_order_to_route(self, route_id: UUID, order_number: str):
         route_order = RouteOrderModel(order_number, route_id)
         db.session.add(route_order)
