@@ -35,9 +35,7 @@ class ItemsList(Resource):
 
     @jwt_required(optional=True)
     def get(self, id: str = None):
-        if not id:
-            return GetItems().execute(seller_id=get_jwt_identity())
-        return GetItems().execute(seller_id=id)
+        return GetItems().execute(seller_id=id or get_jwt_identity())
 
 
 class SellerOrders(Resource):
