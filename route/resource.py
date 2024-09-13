@@ -6,6 +6,10 @@ from route.exception import RouteException
 
 
 from route.service import RouteService
+from route.usecases.add_order_to_route import AddOrderToRoute
+from route.usecases.get_latest_route import GetLatestRoute
+from route.usecases.remove_order_from_route import RemoveOrderFromRoute
+from route.usecases.update_route import UpdateRoute
 
 service = RouteService()
 
@@ -18,14 +22,14 @@ class Route(Resource):
     @jwt_required()
     def get(self, id=None):
         courier = get_jwt_identity()
-        return service.get_latest_route(courier).to_json(), 200
+        return GetLatestRoute().execute(courier=courier).to_json(), 200
 
     @jwt_required()
     def patch(self):
         try:
             args = self.parser.parse_args(strict=True)
             args["courier"] = get_jwt_identity()
-            return service.update_status(**args).to_json(), 200
+            return UpdateRoute().execute(**args).to_json(), 200
         except RouteException as e:
             abort(500, message=e.message)
         except OrderException as e:
@@ -35,13 +39,32 @@ class Route(Resource):
 
 
 class RouteOrders(Resource):
+
+    @jwt_required()
+    def delete(self):
+        try:
+            body = request.get_json()
+            return (
+                RemoveOrderFromRoute()
+                .execute(courier_id=get_jwt_identity(), order_number=body["order"])
+                .to_json(),
+                200,
+            )
+        except RouteException as e:
+            abort(500, message=e.message)
+        finally:
+            print("========== LOG ==========")
+
     @jwt_required()
     def post(self):
         try:
             body = request.get_json()
-            return service.add_order_to_active_route(
-                get_jwt_identity(), body["order"]
-            ).to_json()
+            return (
+                AddOrderToRoute()
+                .execute(courier=get_jwt_identity(), order_number=body["order"])
+                .to_json(),
+                201,
+            )
         except RouteException as e:
             abort(500, message=e.message)
         except OrderException as e:
@@ -55,30 +78,6 @@ class RouteList(Resource):
     parser.add_argument(
         "order", required=True, type=str, help="Order number is required"
     )
-
-    @jwt_required()
-    def post(self, id):
-        args = self.parser.parse_args(strict=True)
-        try:
-            return service.add_order_to_active_route(
-                id, get_jwt_identity(), args["order"]
-            ).to_json()
-        except RouteException as e:
-            abort(500, message=e.message)
-        except OrderException as e:
-            abort(500, message=e.message)
-        finally:
-            print("========== LOG ==========")
-
-    @jwt_required()
-    def delete(self, id):
-        args = self.parser.parse_args(strict=True)
-        try:
-            return service.remove_order(id, args["order"]).to_json()
-        except RouteException as e:
-            abort(500, message=e.message)
-        finally:
-            print("========== LOG ==========")
 
 
 def init(api: Api):

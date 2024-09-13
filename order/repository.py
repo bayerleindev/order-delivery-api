@@ -1,6 +1,6 @@
 from order.model import Item, OrderHistoryModel, OrderModel
 
-from db_config import db, mongo
+from db_config import mongo, db_session
 
 
 class OrderRepository:
@@ -13,19 +13,18 @@ class OrderRepository:
         return mongo.orders.find_one({"_id": number})
 
     def filter(self, **kwargs):
-        return db.session.query(OrderModel).filter_by(**kwargs)
+        return db_session.query(OrderModel).filter_by(**kwargs)
 
     def save_history(self, hisotry: OrderHistoryModel):
-        db.session.add(hisotry)
-        self.commit()
+        db_session.add(hisotry)
 
     def save(self, order: OrderModel):
-        db.session.add(order)
+        db_session.add(order)
 
         items = []
         for item in order.items:
             db_item = (
-                db.session.query(Item).filter(Item.sku == item["sku"]).first().to_json()
+                db_session.query(Item).filter(Item.sku == item["sku"]).first().to_json()
             )
             items.append({**db_item, "amount": item["amount"]})
 
@@ -40,9 +39,4 @@ class OrderRepository:
             }
         )
 
-        self.commit()
-
         return mongo.orders.find_one({"_id": order.number})
-
-    def commit(self):
-        db.session.commit()
