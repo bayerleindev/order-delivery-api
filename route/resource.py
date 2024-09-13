@@ -9,6 +9,7 @@ from route.usecases.get_latest_route import GetLatestRoute
 from route.usecases.remove_order_from_route import RemoveOrderFromRoute
 from route.usecases.update_route import UpdateRoute
 
+
 class Route(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument("status", required=True, type=str, help="Status is required")

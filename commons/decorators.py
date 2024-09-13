@@ -7,6 +7,7 @@ from flask_jwt_extended import get_jwt_identity
 from route.usecases.get_route import GetRoute
 from route.usecases.get_route_orders import GetRouteOrders
 
+
 def check_order_in_route(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
