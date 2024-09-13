@@ -66,9 +66,3 @@ class SellerService:
         except IntegrityError as e:
             print(e)
             raise SellerException("Seller already exists.")
-
-    def get_items(self, id: UUID):
-        return [
-            item.to_json()
-            for item in db.session.query(Item).filter(Item.seller_id == id).all()
-        ]

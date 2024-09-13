@@ -4,6 +4,7 @@ from flask_restful import Api, Resource, abort
 from seller.exception import SellerException
 
 from seller.service import SellerService
+from seller.usecases.get_items import GetItems
 from seller.usecases.save_item import SaveItem
 
 service = SellerService()
@@ -33,8 +34,9 @@ class ItemsList(Resource):
     @jwt_required(optional=True)
     def get(self, id: str = None):
         if not id:
-            return service.get_items(get_jwt_identity())
-        return service.get_items(id)
+            return GetItems().execute(seller_id=get_jwt_identity())
+        return GetItems().execute(seller_id=id)
+
 
 
 class SellerOrders(Resource):
