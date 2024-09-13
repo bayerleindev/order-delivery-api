@@ -6,6 +6,7 @@ from route.exception import RouteException
 
 
 from route.service import RouteService
+from route.usecases.add_order_to_route import AddOrderToRoute
 from route.usecases.get_latest_route import GetLatestRoute
 
 service = RouteService()
@@ -40,9 +41,13 @@ class RouteOrders(Resource):
     def post(self):
         try:
             body = request.get_json()
-            return service.add_order_to_active_route(
-                get_jwt_identity(), body["order"]
-            ).to_json()
+
+            return (
+                AddOrderToRoute()
+                .execute(courier=get_jwt_identity(), order_number=body["order"])
+                .to_json(),
+                201,
+            )
         except RouteException as e:
             abort(500, message=e.message)
         except OrderException as e:
@@ -56,20 +61,6 @@ class RouteList(Resource):
     parser.add_argument(
         "order", required=True, type=str, help="Order number is required"
     )
-
-    @jwt_required()
-    def post(self, id):
-        args = self.parser.parse_args(strict=True)
-        try:
-            return service.add_order_to_active_route(
-                id, get_jwt_identity(), args["order"]
-            ).to_json()
-        except RouteException as e:
-            abort(500, message=e.message)
-        except OrderException as e:
-            abort(500, message=e.message)
-        finally:
-            print("========== LOG ==========")
 
     @jwt_required()
     def delete(self, id):

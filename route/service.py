@@ -55,35 +55,6 @@ class RouteService:
             "Cannot remove order from route in status {}.".format(route.status)
         )
 
-    def add_order_to_active_route(self, courier_id: UUID, order_number: str):
-        route = GetRoute().execute(courier_id=courier_id)
-
-        if not route or route.status in ["FINALIZED", "ABORTED"]:
-            route = self.save(courier_id=courier_id, id=id)
-
-        if str(route.courier_id) != str(courier_id):
-            raise RouteException("Route not found.")
-
-        if route.status != "NEW":
-            raise RouteException("Finish your opened route before creating a new one.")
-
-        orders = [
-            order.order_number for order in GetRouteOrders().execute(route_id=route.id)
-        ]
-
-        if order_number in orders:
-            return Route(
-                route.id, route.status, [LoadOrder().execute(order) for order in orders]
-            )
-
-        orders.append(order_number)
-
-        UpdateOrder().execute(Input(order_number, status="CONFIRMED"))
-        self.link_order_to_route(route.id, order_number)
-        return Route(
-            route.id, route.status, [LoadOrder().execute(order) for order in orders]
-        )
-
     def start_route(self, route: RouteModel):
         if route.status == "IN_TRAFFIC":
             return Route(
