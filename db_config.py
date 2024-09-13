@@ -8,9 +8,7 @@ class Base(DeclarativeBase):
     pass
 
 
-engine = create_engine(
-    "postgresql+psycopg2://user:pass@localhost:5432/delivery"
-)  # Substitua pela sua string de conexão
+engine = create_engine("postgresql+psycopg2://user:pass@localhost:5432/delivery")
 Session = scoped_session(sessionmaker(bind=engine))
 db_session = Session
 
