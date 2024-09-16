@@ -8,7 +8,9 @@ setup-local:
 	flask db upgrade
 	flask run --port 5151
 
-test:
+test: setup-local test-run
+
+test-run:
 	pytest tests/*
 
 install:
