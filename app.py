@@ -28,10 +28,10 @@ jwt = JWTManager(app)
 cors = CORS(app)
 
 app.config["CORS_HEADERS"] = "Content-Type"
-app.config["MONGO_URI"] = "mongodb://localhost:27017/delivery"
+app.config["MONGO_URI"] = "mongodb://127.0.0.1:27017/delivery"
 app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
 app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-    "url": "postgresql+psycopg2://user:pass@localhost:5432/delivery",
+    "url": "postgresql+psycopg2://user:pass@127.0.0.1:5432/delivery",
     "pool_recycle": 20,
     "pool_size": 10,
     "max_overflow": 5,
