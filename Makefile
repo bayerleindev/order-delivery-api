@@ -5,6 +5,7 @@ lint:
 setup-local:
 	docker compose up -d
 	export FLASK_APP=app.py
+	sleep 10
 	flask db upgrade
 
 run-local:
