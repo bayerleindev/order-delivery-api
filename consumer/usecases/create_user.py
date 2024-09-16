@@ -1,25 +1,19 @@
 from consumer.model import ConsumerModel
-
-
-class Input:
-    document: str
-    name: str
-    email: str
-    phone: str
-
-    def __init__(self, document: str, name: str, email: str, phone: str) -> None:
-        self.document = document
-        self.name = name
-        self.email = email
-        self.phone = phone
+from consumer.repository import ConsumerRepository
 
 
 class CreateUser:
-    def execute(self, input: Input):
+
+    def __init__(self, repository: ConsumerRepository = None) -> None:
+        self.repository = repository or ConsumerRepository()
+
+    def execute(self, **kwargs):
         consumer = ConsumerModel(
-            document=input.document,
-            name=input.name,
-            email=input.email,
-            phone=input.phone,
+            document=kwargs["document"],
+            name=kwargs["name"],
+            email=kwargs["email"],
+            phone=kwargs["phone"],
         )
-        print(consumer.to_json())
+        self.repository.save(consumer)
+
+        return consumer

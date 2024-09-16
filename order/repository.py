@@ -33,7 +33,8 @@ class OrderRepository:
                 "_id": order.number,
                 "number": order.number,
                 "status": order.status,
-                "consumer": order.consumer_id,
+                "consumer": str(order.consumer_id),
+                "seller": str(order.seller_id),
                 "address": order.address,
                 "items": items,
             }
