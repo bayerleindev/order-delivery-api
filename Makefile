@@ -6,6 +6,8 @@ setup-local:
 	docker compose up -d
 	export FLASK_APP=app.py
 	flask db upgrade
+
+run-local:
 	flask run --port 5151
 
 test: setup-local test-run
