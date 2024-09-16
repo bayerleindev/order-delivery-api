@@ -1,21 +1,69 @@
-from typing import List
+import json
+import os
 from uuid import UUID
-from auth.model import AuthModel, Role
-from db_config import db
+import requests
 
 
 class Auth:
-    def register(self, email: str, password: str, identity_id: UUID, roles: List[Role]):
-        user = AuthModel(
-            email=email, password=password, identity_id=identity_id, roles=roles
+    def register(self, email: str, password: str, name: str, last_name: str, id: UUID):
+        admin_token = self.get_admin_token().get("access_token")
+
+        data = {
+            "username": email,
+            "email": email,
+            "firstName": name,
+            "lastName": last_name,
+            "enabled": True,
+            "credentials": [
+                {"type": "password", "value": password, "temporary": False}
+            ],
+            "attributes": {"id": str(id)},
+        }
+
+        return requests.post(
+            "http://localhost:8080/admin/realms/master/users",
+            headers={"Authorization": "Bearer {}".format(admin_token)},
+            data=json.dumps(data),
         )
-        db.session.add(user)
 
     def login(self, email: str, password: str):
-        return (
-            db.session.query(AuthModel)
-            .filter(AuthModel.email == email)
-            .filter(AuthModel.password == password)
-            .filter(AuthModel.is_operational)
-            .first()
+
+        data = {
+            "client_id": os.environ.get("KEYCLOAK_CLIENT_ID"),
+            "grant_type": "password",
+            "username": email,
+            "password": password,
+        }
+
+        request = requests.post(
+            "http://localhost:8080/realms/master/protocol/openid-connect/token",
+            data=data,
+        )
+
+        if request.ok:
+            return self.get_user_info(email)
+
+    def get_admin_token(self):
+        body = {
+            "client_id": "admin-cli",
+            "grant_type": "password",
+            "username": os.environ.get("KEYCLOAK_ADMIN_USER", ""),
+            "password": os.environ.get("KEYCLOAK_ADMIN_PASS", ""),
+        }
+
+        json = requests.post(
+            "http://localhost:8080/realms/master/protocol/openid-connect/token",
+            data=body,
+        ).json()
+
+        return json
+
+    def get_user_info(self, email: str):
+        return requests.get(
+            "http://localhost:8080/admin/realms/master/users?email={}".format(email),
+            headers={
+                "Authorization": "Bearer {}".format(
+                    self.get_admin_token().get("access_token")
+                )
+            },
         )

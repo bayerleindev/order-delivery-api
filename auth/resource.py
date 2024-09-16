@@ -9,6 +9,7 @@ auth = Auth()
 
 class Login(Resource):
     def post(self):
+
         parser = reqparse.RequestParser()
         parser.add_argument("email", required=True, type=str, help="Email is required")
         parser.add_argument(
@@ -16,16 +17,18 @@ class Login(Resource):
         )
         args = parser.parse_args(strict=True)
 
-        courier = auth.login(args["email"], args["password"])
+        login = auth.login(args["email"], args["password"])
 
-        if courier:
+        if login.ok:
+            id = login.json()[0].get("attributes").get("id")[0]
+
             access_token = create_access_token(
-                identity=courier.identity_id,
-                additional_claims={"id": courier.identity_id},
+                identity=id,
+                additional_claims={"id": id},
                 expires_delta=datetime.timedelta(minutes=15),
             )
-            return {"access_token": access_token}, 201
-        return {}, 403
+
+        return {"access_token": access_token}, 201
 
 
 def init(api: Api):
