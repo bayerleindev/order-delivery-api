@@ -1,7 +1,7 @@
 from uuid import UUID
 from flask import request
 from flask_restful import Api, Resource
-from consumer.usecases.create_user import CreateUser, Input
+from consumer.usecases.create_user import CreateUser
 from order.usecases.filter_order import FilterOrder
 from order.usecases.load_order import LoadOrder
 
@@ -10,12 +10,10 @@ class ConsumerList(Resource):
     def post(self):
         body = request.get_json()
         CreateUser().execute(
-            Input(
-                document=body.get("document"),
-                name=body.get("name"),
-                email=body.get("email"),
-                phone=body.get("phone"),
-            )
+            document=body.get("document"),
+            name=body.get("name"),
+            email=body.get("email"),
+            phone=body.get("phone"),
         )
 
 

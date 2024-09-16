@@ -23,8 +23,8 @@ class Input:
 
 
 class CreateOrder:
-    def __init__(self) -> None:
-        self.repository = OrderRepository()
+    def __init__(self, repository: OrderRepository = None) -> None:
+        self.repository = repository or OrderRepository()
 
     def execute(self, input: Input):
         if not input.seller_id:
