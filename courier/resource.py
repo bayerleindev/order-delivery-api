@@ -18,7 +18,7 @@ class CourierList(Resource):
     def post(self):
         args = self.parser.parse_args(strict=True)
 
-        return CreateCourier().execute(**args), 201
+        return CreateCourier().execute(**args).to_json(), 201
 
 
 def init(api: Api):

@@ -12,8 +12,8 @@ class CreateCourier:
         courier = CourierModel(document=kwargs["document"], name=kwargs["name"])
 
         identity = Auth().register(
-            kwargs["email"],
-            kwargs["password"],
+            email=kwargs["email"],
+            password=kwargs["password"],
             name=kwargs["name"],
             last_name=kwargs["last_name"],
             id=courier.id,
@@ -21,5 +21,5 @@ class CreateCourier:
 
         if identity.ok:
             self.repository.save(courier)
-            return courier.to_json()
+            return courier
         return identity.json()

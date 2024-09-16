@@ -23,7 +23,12 @@ class TestIntegration:
     def test_create_order(self, order_repository):
         seller = CreateSeller().execute(document="123", name="Integration Test")
         consumer = CreateUser().execute(
-            document="123", name="Integration Test", email="integration@test2", phone=""
+            document="123",
+            name="Integration",
+            last_name="Test",
+            email="integration@test2",
+            phone="",
+            password="1234",
         )
         input = Input(
             seller_id=seller.id,
@@ -57,7 +62,7 @@ class TestIntegration:
             document="1234",
         )
         result = AddOrderToRoute().execute(
-            order_number=pytest.order["number"], courier=pytest.courier["id"]
+            order_number=pytest.order["number"], courier=pytest.courier.id
         )
 
         assert result.id
@@ -67,9 +72,7 @@ class TestIntegration:
         assert result.orders[0]["number"] == pytest.order["number"]
 
     def test_start_route(self):
-        result = UpdateRoute().execute(
-            courier=pytest.courier["id"], status="IN_TRAFFIC"
-        )
+        result = UpdateRoute().execute(courier=pytest.courier.id, status="IN_TRAFFIC")
 
         assert result.id
         assert result.status == "IN_TRAFFIC"
@@ -101,7 +104,7 @@ class TestIntegration:
         assert result["number"] == pytest.order["number"]
 
     def test_finish_route(self):
-        result = UpdateRoute().execute(courier=pytest.courier["id"], status="FINALIZED")
+        result = UpdateRoute().execute(courier=pytest.courier.id, status="FINALIZED")
 
         assert result.id
         assert result.status == "FINALIZED"
@@ -110,7 +113,7 @@ class TestIntegration:
         assert result.orders[0]["number"] == pytest.order["number"]
 
     def test_check_latest_route(self):
-        result = GetLatestRoute().execute(courier=pytest.courier["id"])
+        result = GetLatestRoute().execute(courier=pytest.courier.id)
 
         assert result.id
         assert result.status == "FINALIZED"
