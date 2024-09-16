@@ -1,8 +1,6 @@
 from flask_restful import Api, Resource, reqparse
 
-from courier.service import CourierService
-
-service = CourierService()
+from courier.usecases.create_courier import CreateCourier
 
 
 class CourierList(Resource):
@@ -19,10 +17,8 @@ class CourierList(Resource):
 
     def post(self):
         args = self.parser.parse_args(strict=True)
-        return service.save(**args), 201
 
-    def get(self):
-        return service.get_all()
+        return CreateCourier().execute(**args), 201
 
 
 def init(api: Api):

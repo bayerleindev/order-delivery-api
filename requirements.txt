@@ -2,6 +2,8 @@ alembic==1.13.2
 aniso8601==9.0.1
 black==24.8.0
 blinker==1.8.2
+certifi==2024.8.30
+charset-normalizer==3.3.2
 click==8.1.7
 dnspython==2.6.1
 Flask==3.0.3
@@ -12,6 +14,7 @@ Flask-PyMongo==2.3.0
 Flask-RESTful==0.3.10
 Flask-SQLAlchemy==3.1.1
 gunicorn==23.0.0
+idna==3.10
 importlib_metadata==8.4.0
 importlib_resources==6.4.4
 itsdangerous==2.2.0
@@ -27,10 +30,12 @@ psycopg2-binary==2.9.9
 PyJWT==2.9.0
 pymongo==4.8.0
 pytz==2024.1
+requests==2.32.3
 ruff==0.6.3
 six==1.16.0
 SQLAlchemy==2.0.32
 tomli==2.0.1
 typing_extensions==4.12.2
+urllib3==2.2.3
 Werkzeug==3.0.4
 zipp==3.20.0

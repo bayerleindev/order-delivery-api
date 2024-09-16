@@ -1,11 +1,14 @@
 from auth.auth import Auth
 from courier.model import CourierModel
-from db_config import db_session
+from courier.repository import CourierRepository
 
 
-class CourierService:
-    def save(self, **kwargs):
+class CreateCourier:
 
+    def __init__(self) -> None:
+        self.repository = CourierRepository()
+
+    def execute(self, **kwargs):
         courier = CourierModel(document=kwargs["document"], name=kwargs["name"])
 
         identity = Auth().register(
@@ -17,8 +20,6 @@ class CourierService:
         )
 
         if identity.ok:
-            db_session.add(courier)
+            self.repository.save(courier)
+            return courier.to_json()
         return identity.json()
-
-    def get_all(self):
-        return [courier.to_json() for courier in db_session.query(CourierModel).all()]
