@@ -3,8 +3,6 @@ name: Deploy feature
 on:
   push:
     branches-ignore:
-    - master
-    - main
     - dependabot/**
     - temp-*
 
