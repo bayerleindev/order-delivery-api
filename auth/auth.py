@@ -44,6 +44,7 @@ class Auth:
             return self.get_user_info(email)
 
     def get_admin_token(self):
+
         body = {
             "client_id": "admin-cli",
             "grant_type": "password",
@@ -54,6 +55,7 @@ class Auth:
         json = requests.post(
             "http://localhost:8080/realms/master/protocol/openid-connect/token",
             data=body,
+            timeout=10,
         ).json()
 
         return json

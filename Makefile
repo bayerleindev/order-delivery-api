@@ -5,16 +5,19 @@ lint:
 setup-local:
 	docker compose up -d
 	export FLASK_APP=app.py
-	sleep 10
+	sleep 30
 	flask db upgrade
 
 run-local:
 	flask run --port 5151
 
-test: setup-local test-run
+clean-local:
+	docker compose down
+
+test: setup-local test-run clean-local
 
 test-run:
-	pytest tests/*
+	pytest -rP tests/*
 
 install:
 	pip3 install -r requirements.txt
