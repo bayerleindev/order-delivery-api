@@ -7,3 +7,6 @@ setup-local:
 	export FLASK_APP=app.py
 	flask db upgrade
 	flask run --port 5151
+
+test:
+	pytest tests/*

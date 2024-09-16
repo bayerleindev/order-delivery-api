@@ -1,0 +1,36 @@
+name: Deploy feature
+
+on:
+  push:
+    branches-ignore:
+    - master
+    - main
+    - dependabot/**
+    - temp-*
+
+jobs:
+  tests:
+      name: Run tests
+      runs-on: ubuntu-latest
+
+      steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      # - name: Configure GitHub credentials
+      #   uses: de-vri-es/setup-git-credentials@v2
+      #   with:
+      #     credentials: ${{ secrets.GH_TOKEN_GLOBAL }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.6.1
+
+      - name: Run tests
+        run: make test
