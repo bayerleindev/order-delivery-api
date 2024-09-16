@@ -30,7 +30,9 @@ cors = CORS(app)
 app.config["CORS_HEADERS"] = "Content-Type"
 app.config["MONGO_URI"] = "mongodb://127.0.0.1:27017/delivery"
 app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
-app.config["SQLALCHEMY_DATABASE_URI"] = 'postgresql+psycopg2://user:pass@127.0.0.1:5432/delivery'
+app.config["SQLALCHEMY_DATABASE_URI"] = (
+    "postgresql+psycopg2://user:pass@127.0.0.1:5432/delivery"
+)
 
 
 @app.before_request
