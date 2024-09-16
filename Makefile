@@ -10,3 +10,6 @@ setup-local:
 
 test:
 	pytest tests/*
+
+install:
+	pip3 install -r requirements.txt
