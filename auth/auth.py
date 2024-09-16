@@ -21,7 +21,7 @@ class Auth:
         }
 
         return requests.post(
-            "http://localhost:8080/admin/realms/master/users",
+            "http://127.0.0.1:8080/admin/realms/master/users",
             headers={"Authorization": "Bearer {}".format(admin_token)},
             data=json.dumps(data),
         )
@@ -36,7 +36,7 @@ class Auth:
         }
 
         request = requests.post(
-            "http://localhost:8080/realms/master/protocol/openid-connect/token",
+            "http://127.0.0.1:8080/realms/master/protocol/openid-connect/token",
             data=data,
         )
 
@@ -53,7 +53,7 @@ class Auth:
         }
 
         json = requests.post(
-            "http://localhost:8080/realms/master/protocol/openid-connect/token",
+            "http://127.0.0.1:8080/realms/master/protocol/openid-connect/token",
             data=body,
             timeout=10,
         ).json()
@@ -62,7 +62,7 @@ class Auth:
 
     def get_user_info(self, email: str):
         return requests.get(
-            "http://localhost:8080/admin/realms/master/users?email={}".format(email),
+            "http://127.0.0.1:8080/admin/realms/master/users?email={}".format(email),
             headers={
                 "Authorization": "Bearer {}".format(
                     self.get_admin_token().get("access_token")
