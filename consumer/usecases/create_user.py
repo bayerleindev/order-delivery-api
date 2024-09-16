@@ -1,3 +1,4 @@
+from auth.auth import Auth
 from consumer.model import ConsumerModel
 from consumer.repository import ConsumerRepository
 
@@ -14,6 +15,18 @@ class CreateUser:
             email=kwargs["email"],
             phone=kwargs["phone"],
         )
-        self.repository.save(consumer)
 
-        return consumer
+        identity = Auth().register(
+            kwargs["email"],
+            kwargs["password"],
+            name=kwargs["name"],
+            last_name=kwargs["last_name"],
+            id=consumer.id,
+        )
+
+        print(identity)
+
+        if identity.ok:
+            self.repository.save(consumer)
+            return consumer
+        return identity.json()

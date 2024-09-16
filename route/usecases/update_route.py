@@ -23,7 +23,7 @@ class UpdateRoute:
         if not route:
             raise RouteException("Route not found.")
 
-        if str(route.courier_id) != courier:
+        if str(route.courier_id) != str(courier):
             raise RouteException("Route not found.")
 
         if route.status == status:
