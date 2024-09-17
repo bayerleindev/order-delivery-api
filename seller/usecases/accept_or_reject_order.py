@@ -1,12 +1,15 @@
+from courier.usecases.assign_order_to_courier import AssignOrderToCourier
 from order.usecases.filter_order import FilterOrder
 from order.usecases.update_order import Input, UpdateOrder
 from seller.exception import SellerException
+from seller.repository import SellerRepository
 
 
 class AcceptOrRejectOrder:
 
     def __init__(self) -> None:
         self.accepted_status = ["ACCEPTED", "REJECTED"]
+        self.repository = SellerRepository()
 
     def execute(self, **kwargs):
         seller_id = kwargs["seller_id"]
@@ -21,6 +24,12 @@ class AcceptOrRejectOrder:
         if not order or str(order.seller_id) != str(seller_id):
             raise SellerException("Order {} not found.".format(order_number))
 
-        return UpdateOrder().execute(Input(order_number, status))
+        result = UpdateOrder().execute(Input(order_number, status))
 
-    # TODO delegate order to courier
+        seller = self.repository.get_sellers(id=seller_id)[0]
+
+        AssignOrderToCourier().execute(
+            coordinates=[seller.longitude, seller.latitude], order_number=order_number
+        )
+
+        return result

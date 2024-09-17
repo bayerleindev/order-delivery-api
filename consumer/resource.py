@@ -14,6 +14,8 @@ class ConsumerList(Resource):
             name=body.get("name"),
             email=body.get("email"),
             phone=body.get("phone"),
+            password=body.get("password"),
+            last_name=body.get("last_name"),
         )
 
         return consumer.to_json(), 201

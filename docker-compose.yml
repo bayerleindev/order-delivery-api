@@ -10,13 +10,15 @@ services:
         - "27017:27017"
     postgres:
         container_name: postgres
-        image: postgres
+        image: postgres:alpine
         environment:
             POSTGRES_USER: user
             POSTGRES_PASSWORD: pass
-            POSTGRES_DB: delivery
+            POSTGRES_MULTIPLE_DATABASES: delivery,identity_manager
         ports:
             - "5432:5432"
+        volumes:
+            - ./scripts/db-init.sh:/docker-entrypoint-initdb.d/db-init.sh
     keycloak:
         image: quay.io/keycloak/keycloak:23.0.6
         command: start
@@ -30,7 +32,7 @@ services:
             KEYCLOAK_ADMIN: admin
             KEYCLOAK_ADMIN_PASSWORD: admin
             KC_DB: postgres
-            KC_DB_URL: jdbc:postgresql://postgres/delivery
+            KC_DB_URL: jdbc:postgresql://postgres/identity_manager
             KC_DB_USERNAME: user
             KC_DB_PASSWORD: pass
         ports:

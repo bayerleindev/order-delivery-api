@@ -24,11 +24,11 @@ class GeolocationRepository:
         )
 
     def save_courier_geolocation(
-        self, courier_id: str, latest_location: Any, status: str = "BUSY"
+        self, id: str, courier_id: str, latest_location: Any, status: str = "BUSY"
     ):
         mongo.orders.insert_one(
             {
-                "_id": courier_id,
+                "_id": id,
                 "latest_location": {
                     "type": "Point",
                     "coordinates": [
@@ -38,5 +38,6 @@ class GeolocationRepository:
                 },
                 "locations": [latest_location],
                 "status": status,
+                "courier_id": courier_id,
             }
         )

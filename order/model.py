@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy.orm import relationship
 from consumer.model import ConsumerModel
 from db_config import db
-from sqlalchemy import Float, ForeignKey
+from sqlalchemy import ARRAY, Float, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from seller.model import SellerModel
@@ -18,8 +18,13 @@ class OrderModel(db.Model):
     status: Mapped[str] = mapped_column()
     seller_id: Mapped[UUID] = mapped_column(ForeignKey(SellerModel.id), index=True)
     consumer_id: Mapped[UUID] = mapped_column(ForeignKey(ConsumerModel.id), index=True)
+
     created_at: Mapped[datetime] = mapped_column(nullable=True, default=datetime.now())
     updated_at: Mapped[datetime] = mapped_column(nullable=True, default=None)
+
+    couriers: Mapped[List[str]] = mapped_column(
+        ARRAY(String), default=[], nullable=True
+    )
     seller = relationship("SellerModel")
     consumer = relationship("ConsumerModel")
 

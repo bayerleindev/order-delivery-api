@@ -24,8 +24,6 @@ class CreateUser:
             id=consumer.id,
         )
 
-        print(identity)
-
         if identity.ok:
             self.repository.save(consumer)
             return consumer

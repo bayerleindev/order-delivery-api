@@ -1,9 +1,16 @@
+from typing import List
 from order.model import Item, OrderHistoryModel, OrderModel
 
 from db_config import mongo, db_session
 
 
 class OrderRepository:
+
+    def assign_couriers(self, order_number: str, courier_ids: List[str]):
+        db_session.query(OrderModel).filter(OrderModel.number == order_number).update(
+            {OrderModel.couriers: courier_ids}
+        )
+
     def update(self, order: OrderModel):
         mongo.orders.update_one(
             {"_id": order.number}, {"$set": {"status": order.status}}

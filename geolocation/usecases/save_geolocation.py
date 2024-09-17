@@ -21,7 +21,9 @@ class SaveGeolocation:
 
         courier_id = kwargs["courier_id"]
 
-        geolocation = self.repository.get_courier_geolocation(courier_id)
+        geolocation = self.repository.get_courier_geolocation(
+            "COURIER_ID#{}".format(courier_id)
+        )
 
         coordinates = Coordinates()
 
@@ -37,5 +39,8 @@ class SaveGeolocation:
             )
         else:
             self.repository.save_courier_geolocation(
-                "COURIER_ID#{}".format(courier_id), coordinates.to_json(), "FREE"
+                "COURIER_ID#{}".format(courier_id),
+                courier_id,
+                coordinates.to_json(),
+                "FREE",
             )
