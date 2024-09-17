@@ -22,3 +22,5 @@ class AcceptOrRejectOrder:
             raise SellerException("Order {} not found.".format(order_number))
 
         return UpdateOrder().execute(Input(order_number, status))
+
+    # TODO delegate order to courier

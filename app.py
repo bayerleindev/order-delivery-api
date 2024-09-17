@@ -10,6 +10,7 @@ from route import resource as route_resource
 from auth import resource as auth_resource
 from seller import resource as seller_resource
 from consumer import resource as consumer_resource
+from geolocation import resource as geolocation_resource
 from db_config import db
 from flask_migrate import Migrate
 
@@ -55,3 +56,4 @@ route_resource.init(api)
 auth_resource.init(api)
 seller_resource.init(api)
 consumer_resource.init(api)
+geolocation_resource.init(api)
