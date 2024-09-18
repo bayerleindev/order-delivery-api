@@ -14,6 +14,7 @@ jobs:
       env:
         KEYCLOAK_ADMIN_USER: ${{ secrets.KEYCLOAK_ADMIN_USER }}
         KEYCLOAK_ADMIN_PASS: ${{ secrets.KEYCLOAK_ADMIN_PASS }}
+        KEYCLOAK_API_URL: ${{ secrets.KEYCLOAK_API_URL }}
       steps:
       - name: Clone repository
         uses: actions/checkout@v4
