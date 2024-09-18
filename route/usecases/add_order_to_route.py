@@ -1,4 +1,5 @@
 from datetime import datetime
+from order.usecases.filter_order import FilterOrder
 from order.usecases.load_order import LoadOrder
 from order.usecases.update_order import Input, UpdateOrder
 from route.exception import RouteException
@@ -28,6 +29,15 @@ class AddOrderToRoute:
 
         if route.status != "NEW":
             raise RouteException("Finish your opened route before creating a new one.")
+
+        order = FilterOrder().execute(number=order_number).first()
+
+        if (
+            order
+            and order.selected_courier
+            and str(order.selected_courier) != str(kwargs["courier"])
+        ):
+            raise RouteException("You cannot add this order.")
 
         orders = [
             order.order_number for order in GetRouteOrders().execute(route_id=route.id)

@@ -3,12 +3,46 @@ from db_config import mongo
 
 
 class GeolocationRepository:
-    def get_courier_geolocation(self, id: str):
-        return mongo.orders.find_one({"_id": id})
 
-    def update_courier_geolocation(self, id: str, latest_location: Any, locations: Any):
-        mongo.orders.update_one(
-            {"_id": id},
+    def save_order_geolocation(
+        self,
+        order_number: str,
+        courier_id: str,
+        latest_location: Any,
+        status: str = "BUSY",
+    ):
+        mongo.courier_locations.insert_one(
+            {
+                "_id": courier_id,
+                "latest_location": {
+                    "type": "Point",
+                    "coordinates": [
+                        float(latest_location["longitude"]),
+                        float(latest_location["latitude"]),
+                    ],
+                },
+                "locations": [latest_location],
+                "status": status,
+                "order_number": order_number,
+            }
+        )
+
+    def get_order_geolocation(self, order_number: str):
+        return mongo.courier_locations.find_one({"order_number": order_number})
+
+    def get_courier_geolocation(self, courier_id: str):
+        return mongo.courier_locations.find_one({"_id": courier_id})
+
+    def update_order_geolocation(
+        self,
+        courier_id: str,
+        order_number: str,
+        latest_location: Any,
+        locations: Any,
+        status: str,
+    ):
+        mongo.courier_locations.update_one(
+            {"_id": courier_id},
             {
                 "$set": {
                     "latest_location": {
@@ -19,25 +53,8 @@ class GeolocationRepository:
                         ],
                     },
                     "locations": locations,
+                    "status": status,
+                    "order_number": order_number,
                 }
             },
-        )
-
-    def save_courier_geolocation(
-        self, id: str, courier_id: str, latest_location: Any, status: str = "BUSY"
-    ):
-        mongo.orders.insert_one(
-            {
-                "_id": id,
-                "latest_location": {
-                    "type": "Point",
-                    "coordinates": [
-                        float(latest_location["longitude"]),
-                        float(latest_location["latitude"]),
-                    ],
-                },
-                "locations": [latest_location],
-                "status": status,
-                "courier_id": courier_id,
-            }
         )

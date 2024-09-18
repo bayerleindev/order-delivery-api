@@ -14,7 +14,6 @@ from geolocation import resource as geolocation_resource
 from db_config import db
 from flask_migrate import Migrate
 
-
 errors = {
     "ExpiredSignatureError": {
         "message": "Token Expired",
@@ -27,6 +26,7 @@ api = Api(app, errors=errors)
 migrate = Migrate()
 jwt = JWTManager(app)
 cors = CORS(app)
+
 
 app.config["CORS_HEADERS"] = "Content-Type"
 app.config["MONGO_URI"] = "mongodb://user:pass@127.0.0.1:27017"

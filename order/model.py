@@ -3,6 +3,7 @@ from typing import List
 from uuid import UUID
 from sqlalchemy.orm import relationship
 from consumer.model import ConsumerModel
+from courier.model import CourierModel
 from db_config import db
 from sqlalchemy import ARRAY, Float, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
@@ -18,6 +19,9 @@ class OrderModel(db.Model):
     status: Mapped[str] = mapped_column()
     seller_id: Mapped[UUID] = mapped_column(ForeignKey(SellerModel.id), index=True)
     consumer_id: Mapped[UUID] = mapped_column(ForeignKey(ConsumerModel.id), index=True)
+    selected_courier: Mapped[UUID] = mapped_column(
+        ForeignKey(CourierModel.id), index=True, nullable=True
+    )
 
     created_at: Mapped[datetime] = mapped_column(nullable=True, default=datetime.now())
     updated_at: Mapped[datetime] = mapped_column(nullable=True, default=None)

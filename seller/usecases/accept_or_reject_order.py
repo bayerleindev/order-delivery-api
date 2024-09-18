@@ -1,3 +1,4 @@
+from commons.scheduler import schedule
 from courier.usecases.assign_order_to_courier import AssignOrderToCourier
 from order.usecases.filter_order import FilterOrder
 from order.usecases.update_order import Input, UpdateOrder
@@ -10,6 +11,9 @@ class AcceptOrRejectOrder:
     def __init__(self) -> None:
         self.accepted_status = ["ACCEPTED", "REJECTED"]
         self.repository = SellerRepository()
+
+    def __print(self, txt: str):
+        print(txt)
 
     def execute(self, **kwargs):
         seller_id = kwargs["seller_id"]
@@ -26,10 +30,13 @@ class AcceptOrRejectOrder:
 
         result = UpdateOrder().execute(Input(order_number, status))
 
-        seller = self.repository.get_sellers(id=seller_id)[0]
+        if not order.selected_courier:
+            seller = self.repository.get_sellers(id=seller_id)[0]
 
-        AssignOrderToCourier().execute(
-            coordinates=[seller.longitude, seller.latitude], order_number=order_number
-        )
-
+            schedule(
+                AssignOrderToCourier().execute,
+                5,
+                [seller.longitude, seller.latitude],
+                order_number,
+            )
         return result

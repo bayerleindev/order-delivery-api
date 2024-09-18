@@ -20,7 +20,7 @@ class CourierRepository:
                 }
             },
         }
-        couriers = list(mongo.orders.find(query))
+        couriers = list(mongo.courier_locations.find(query))
 
         if couriers:
             return couriers
