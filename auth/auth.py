@@ -5,6 +5,10 @@ import requests
 
 
 class Auth:
+
+    def __init__(self) -> None:
+        self.api_url = os.environ.get("KEYCLOAK_API_URL")
+
     def register(self, email: str, password: str, name: str, last_name: str, id: UUID):
         admin_token = self.get_admin_token().get("access_token")
 
@@ -21,7 +25,7 @@ class Auth:
         }
 
         return requests.post(
-            "http://127.0.0.1:8080/admin/realms/master/users",
+            "{}/admin/realms/master/users".format(self.api_url),
             headers={"Authorization": "Bearer {}".format(admin_token)},
             data=json.dumps(data),
         )
@@ -36,7 +40,7 @@ class Auth:
         }
 
         request = requests.post(
-            "http://127.0.0.1:8080/realms/master/protocol/openid-connect/token",
+            "{}/realms/master/protocol/openid-connect/token".format(self.api_url),
             data=data,
         )
 
@@ -53,7 +57,7 @@ class Auth:
         }
 
         json = requests.post(
-            "http://127.0.0.1:8080/realms/master/protocol/openid-connect/token",
+            "{}/realms/master/protocol/openid-connect/token".format(self.api_url),
             data=body,
             timeout=10,
         ).json()
@@ -62,7 +66,7 @@ class Auth:
 
     def get_user_info(self, email: str):
         return requests.get(
-            "http://127.0.0.1:8080/admin/realms/master/users?email={}".format(email),
+            "{}/admin/realms/master/users?email={}".format(self.api_url, email),
             headers={
                 "Authorization": "Bearer {}".format(
                     self.get_admin_token().get("access_token")

@@ -10,9 +10,9 @@ from route import resource as route_resource
 from auth import resource as auth_resource
 from seller import resource as seller_resource
 from consumer import resource as consumer_resource
+from geolocation import resource as geolocation_resource
 from db_config import db
 from flask_migrate import Migrate
-
 
 errors = {
     "ExpiredSignatureError": {
@@ -27,8 +27,9 @@ migrate = Migrate()
 jwt = JWTManager(app)
 cors = CORS(app)
 
+
 app.config["CORS_HEADERS"] = "Content-Type"
-app.config["MONGO_URI"] = "mongodb://127.0.0.1:27017/delivery"
+app.config["MONGO_URI"] = "mongodb://user:pass@127.0.0.1:27017"
 app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
 app.config["SQLALCHEMY_DATABASE_URI"] = (
     "postgresql+psycopg2://user:pass@127.0.0.1:5432/delivery"
@@ -55,3 +56,4 @@ route_resource.init(api)
 auth_resource.init(api)
 seller_resource.init(api)
 consumer_resource.init(api)
+geolocation_resource.init(api)

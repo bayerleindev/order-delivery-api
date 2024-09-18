@@ -21,7 +21,14 @@ class TestIntegration:
         return OrderRepository()
 
     def test_create_order(self, order_repository):
-        seller = CreateSeller().execute(document="123", name="Integration Test")
+        seller = CreateSeller().execute(
+            document="123",
+            name="Integration Test",
+            latitude="0",
+            longitude="0",
+            email="seller@test2",
+            password="1234",
+        )
         consumer = CreateUser().execute(
             document="123",
             name="Integration",
