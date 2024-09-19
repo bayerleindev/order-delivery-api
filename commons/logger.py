@@ -5,7 +5,7 @@ import os
 
 class Logger:
     logging.basicConfig(
-        level=os.environ.get('LOG_LEVEL'),
+        level=os.environ.get("LOG_LEVEL"),
         format="[{asctime}] [{levelname}] {message}",
         style="{",
         datefmt="%Y-%m-%d %H:%M:%S",

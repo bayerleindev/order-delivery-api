@@ -2,7 +2,8 @@ import random
 import string
 from typing import Any, List
 from uuid import UUID
-from order.exception import OrderException
+from commons.base_exception import CustomBaseException
+from commons.errors import get_error
 from order.model import OrderModel
 from order.repository import OrderRepository
 
@@ -28,10 +29,13 @@ class CreateOrder:
 
     def execute(self, input: Input):
         if not input.seller_id:
-            raise OrderException("Invalid seller or seller not found.")
+            raise CustomBaseException(get_error("INVALID_SELLER"))
 
         if not input.consumer_id:
-            raise OrderException("Invalid consumer or consumer not found.")
+            raise CustomBaseException(get_error("INVALID_CONSUMER"))
+
+        if len(input.items) == 0:
+            raise CustomBaseException(get_error("ORDER_WITHOUT_ITEM"))
 
         number = "".join(random.choices(string.digits, k=9))
         order = OrderModel(

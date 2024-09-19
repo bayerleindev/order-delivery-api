@@ -20,6 +20,27 @@ ERROR_MESSAGES = {
             "details": "Status '{}' não permitido.",
         }
     },
+    "ORDER_WITHOUT_ITEM": {
+        "pt": {
+            "code": "4",
+            "message": "Pedido não tem item adicionado.",
+            "details": "Pedido não tem item adicionado.",
+        }
+    },
+    "INVALID_CONSUMER": {
+        "pt": {
+            "code": "5",
+            "message": "Consumidor inválido.",
+            "details": "Consumidor inválido.",
+        }
+    },
+    "INVALID_SELLER": {
+        "pt": {
+            "code": "6",
+            "message": "Seller inválido.",
+            "details": "Seller inválido.",
+        }
+    },
 }
 
 
