@@ -1,4 +1,6 @@
 from auth.auth import Auth
+from commons.base_exception import CustomBaseException
+from commons.errors import get_error
 from seller.model import SellerModel
 from seller.repository import SellerRepository
 
@@ -27,4 +29,4 @@ class CreateSeller:
         if identity.ok:
             self.repository.add_seller(seller)
             return seller
-        return identity.json()
+        raise CustomBaseException(get_error("USER_EXISTS"))
