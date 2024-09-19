@@ -17,14 +17,11 @@ class Seller(Resource):
 
 class SellerList(Resource):
     def post(self):
-        try:
-            body = request.get_json()
-            return (
-                CreateSeller().execute(**body).to_json(),
-                201,
-            )
-        except SellerException as e:
-            abort(500, message=e.message)
+        body = request.get_json()
+        return (
+            CreateSeller().execute(**body).to_json(),
+            201,
+        )
 
     def get(self):
         args = request.args

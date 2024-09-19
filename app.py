@@ -1,4 +1,4 @@
-from flask import Flask, Response
+from flask import Flask, Response, jsonify, request
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from flask_restful import Api
@@ -34,17 +34,24 @@ app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
 app.config["SQLALCHEMY_DATABASE_URI"] = (
     "postgresql+psycopg2://user:pass@127.0.0.1:5432/delivery"
 )
+app.config["TRAP_HTTP_EXCEPTIONS"] = True
 
 
 @app.before_request
 def before_request_callback():
-    BeforeRequestHandler.handle()
+    BeforeRequestHandler.handle(request)
 
 
 @app.after_request
 def after_request_callback(response: Response):
-    AfterRequestHandler.handle(response)
-    return response
+    return AfterRequestHandler.handle(response)
+
+
+def handle_use_case_exception(e):
+    return jsonify(e.error), 500
+
+
+api.handle_error = handle_use_case_exception
 
 
 db.init_app(app)

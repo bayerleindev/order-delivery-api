@@ -1,4 +1,6 @@
 from auth.auth import Auth
+from commons.base_exception import CustomBaseException
+from commons.errors import ERROR_MESSAGES
 from courier.model import CourierModel
 from courier.repository import CourierRepository
 
@@ -22,4 +24,4 @@ class CreateCourier:
         if identity.ok:
             self.repository.save(courier)
             return courier
-        return identity.json()
+        raise CustomBaseException(ERROR_MESSAGES["USER_EXISTS"]["pt"])

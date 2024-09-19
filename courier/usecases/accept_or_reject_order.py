@@ -1,5 +1,7 @@
+from commons.errors import ERROR_MESSAGES
 from commons.scheduler import schedule
 from commons.send_email import send_email
+from courier.exception import CourierException
 from courier.usecases.assign_order_to_courier import AssignOrderToCourier
 from order.model import OrderModel
 from order.repository import OrderRepository
@@ -14,10 +16,15 @@ class AcceptOrRejectOrder:
 
         order = FilterOrder().execute(number=order_number).first()
 
+        if not order:
+            raise CourierException(ERROR_MESSAGES["ORDER_NOT_FOUND"]["pt"])
+
         if status == "REJECTED":
             self.reject(order, courier_id)
         if status == "ACCEPTED":
             self.accept(order, courier_id)
+
+        return order
 
     def accept(self, order: OrderModel, courier_id: str):
         OrderRepository().set_selected_courier(order.number, courier_id)

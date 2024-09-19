@@ -1,4 +1,6 @@
 from auth.auth import Auth
+from commons.base_exception import CustomBaseException
+from commons.errors import ERROR_MESSAGES
 from consumer.model import ConsumerModel
 from consumer.repository import ConsumerRepository
 
@@ -27,4 +29,4 @@ class CreateUser:
         if identity.ok:
             self.repository.save(consumer)
             return consumer
-        return identity.json()
+        raise CustomBaseException(ERROR_MESSAGES["USER_EXISTS"]["pt"])
