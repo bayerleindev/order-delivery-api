@@ -5,6 +5,7 @@ on:
     branches-ignore:
     - dependabot/**
     - temp-*
+    - main
 
 jobs:
   tests:

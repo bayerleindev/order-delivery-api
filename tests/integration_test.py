@@ -10,6 +10,7 @@ from route.usecases.get_latest_route import GetLatestRoute
 from route.usecases.update_route import UpdateRoute
 from seller.usecases.accept_or_reject_order import AcceptOrRejectOrder
 from seller.usecases.create_seller import CreateSeller
+from seller.usecases.save_item import SaveItem
 
 
 class TestIntegration:
@@ -29,6 +30,19 @@ class TestIntegration:
             email="seller@test2",
             password="1234",
         )
+
+        SaveItem().execute(
+            seller.id,
+            items=[
+                {
+                    "sku": "sku",
+                    "name": "name",
+                    "description": "desc",
+                    "price": 3.50,
+                }
+            ],
+        )
+
         consumer = CreateUser().execute(
             document="123",
             name="Integration",
@@ -40,7 +54,7 @@ class TestIntegration:
         input = Input(
             seller_id=seller.id,
             consumer_id=consumer.id,
-            items=[],
+            items=[{"sku": "sku", "amount": 3}],
             address="",
         )
         pytest.order = CreateOrder(order_repository).execute(input)

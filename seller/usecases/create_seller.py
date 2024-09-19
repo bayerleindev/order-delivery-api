@@ -1,8 +1,11 @@
 from auth.auth import Auth
 from commons.base_exception import CustomBaseException
 from commons.errors import get_error
+from commons.logger import Logger
 from seller.model import SellerModel
 from seller.repository import SellerRepository
+
+logger = Logger(__name__)
 
 
 class CreateSeller:
