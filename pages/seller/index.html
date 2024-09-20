@@ -1,127 +1,524 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciamento de Pedidos</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        .container {
-            display: flex;
-            justify-content: space-between;
-            flex-grow: 1;
-            padding: 20px;
-        }
-        .coluna {
-            width: 30%;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            background-color: #f9f9f9;
-        }
-        .coluna h3 {
-            text-align: center;
-        }
-        .pedido-item {
-            background-color: #e7f3ff;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-            display: grid;
-            justify-content: space-between;
-        }
-        button {
-            padding: 5px 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .footer {
-            background-color: #f1f1f1;
-            padding: 20px;
-            border-top: 1px solid #ccc;
-            overflow-x: auto;
-            white-space: nowrap;
-        }
-        .footer h3 {
-            text-align: center;
-        }
-        .footer .pedido-item {
-            background-color: #ffe7e7;
-            display: inline-block;
-            margin-right: 10px;
-            white-space: normal; /* Permite quebra de texto dentro do pedido-item */
-            min-width: 150px; /* Define um tamanho mínimo para os itens */
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pedidos Pendentes</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    .sidebar {
+      height: 100vh;
+      width: 240px;
+      background-color: #333;
+      color: white;
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
+    .sidebar a {
+      color: white;
+      padding: 10px;
+      display: block;
+      text-decoration: none;
+    }
+    .sidebar a:hover {
+      background-color: #575757;
+    }
+    .content {
+      margin-left: 260px;
+      padding: 20px;
+    }
+    .orders-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .orders-column {
+      flex: 1;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+      background-color: #f8f9fa;
+      min-height: 200px;
+    }
+    .order-card {
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 10px;
+      margin: 10px 0;
+      background-color: #fff;
+      text-align: left;
+      cursor: pointer;
+    }
+    .footer {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #f8f9fa;
+      text-align: center;
+    }
+    .delivered-order-card {
+      border: 1px solid green;
+      border-radius: 5px;
+      padding: 5px;
+      margin: 5px 0;
+      background-color: #f3fff0;
+      text-align: left;
+    }
+
+    .delivered-order-card strong {
+      color: green;
+    }
+
+    .finished-order-card {
+      border: 1px solid red;
+      border-radius: 5px;
+      padding: 5px;
+      margin: 5px 0;
+      background-color: #fff0f0;
+      text-align: left;
+    }
+    .finished-order-card strong {
+      color: red;
+    }
+
+    .finalizados-container {
+      display: flex;
+      overflow-x: auto;
+      gap: 10px;
+      padding: 10px 0;
+      white-space: nowrap;
+      max-width: 100%;
+    }
+    .footer {
+      width: 1241px;
+      position: fixed;
+      bottom: 0;
+      left: 250px;
+      right: 0;
+      background-color: #f8f9fa;
+      box-shadow: 0 -1px 10px rgba(0, 0, 0, 0.1);
+      padding: 10px;
+      z-index: 100;
+    }
+
+    /* Container interno para centralizar o conteúdo */
+    .footer-container {
+      max-width: 100%;
+      margin: 0 auto;
+    }
+  </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="coluna" >
-        <h3 id="new-orders">Novos</h3>
-        <div id="lista-novos"></div>
+  <!-- Sidebar -->
+  <div class="sidebar d-flex flex-column">
+    <a href="#">Início</a>
+    <a href="#" data-bs-toggle="collapse" data-bs-target="#pedidosMenu" aria-expanded="false" aria-controls="pedidosMenu">Pedidos</a>
+    <div class="collapse" id="pedidosMenu">
+      <a href="#" class="ps-4">Pendentes</a>
+      <a href="#" class="ps-4">Histórico</a>
+    </div>
+    <a href="#">Mapa</a>
+    <a href="#" data-bs-toggle="collapse" data-bs-target="#estoqueMenu" aria-expanded="false" aria-controls="estoqueMenu">Estoque de Produtos</a>
+    <div class="collapse" id="estoqueMenu">
+      <a href="#" class="ps-4">Produtos</a>
+      <a href="#" class="ps-4">Promoções</a>
+    </div>
+    <a href="#">Desempenho</a>
+    <a href="#">Financeiro</a>
+    <a href="#" class="ps-4">Gerenciamento</a>
+    <a href="#" class="ps-4">Relatórios Financeiros</a>
+    <a href="#">Minha Conta</a>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    <h2>Pedidos Pendentes</h2>
+
+    <!-- Orders Sections -->
+    <div class="orders-container">
+      <div class="orders-column" id="novosPedidos">
+        <h4>Novos (0)</h4>
+        <p id="noNewOrdersMessage">Nenhum pedido pendente</p>
+      </div>
+      <div class="orders-column" id="emSeparacao">
+        <h4>Em separação (0)</h4>
+        <p>Nenhum pedido em separação nas últimas 2 horas</p>
+      </div>
+      <div class="orders-column" id="inTransit">
+        <h4>Entregas em andamento (0)</h4>
+        <p>Nenhuma entrega em andamento nas últimas 2 horas</p>
+      </div>
     </div>
 
-    <div class="coluna">
-        <h3 id="preparing-orders">Em separação</h3>
-        <div id="lista-aceitos"></div>
+    <!-- Footer -->
+    <div class="footer">
+      <div class="footer-container">
+        <h5>Pedidos finalizados</h5>
+        <!-- Container para scroll horizontal dos pedidos finalizados -->
+        <div id="finalizadosPedidos" class="finalizados-container">
+          <!-- Cards de pedidos finalizados serão adicionados aqui dinamicamente -->
+        </div>
+      </div>
     </div>
 
-    <div class="coluna">
-        <h3 id="in-transit-orders">Entregas em andamento</h3>
-        <div id="lista-caminho"></div>
+  <!-- Modal de Detalhes do Pedido -->
+  <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="orderModalLabel">Detalhes do Pedido</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p><strong>Pedido #<span id="modalOrderNumber"></span></strong></p>
+          <p><strong>Cliente:</strong> <span id="modalCustomerName"></span></p>
+          <p><strong>Localização:</strong> <span id="modalDeliveryLocation"></span></p>
+          <p><strong>Itens:</strong> <span id="modalItems"></span></p>
+          <p><strong>Valor Total:</strong> R$ <span id="modalTotalValue"></span></p>
+
+          <!-- Checkbox de Motivos para Rejeição -->
+          <div id="rejectReasons" style="display: none; margin-top: 20px;">
+            <h6>Motivos para rejeitar:</h6>
+            <div>
+              <input type="checkbox" id="motivo1" class="reason-checkbox"> Pedido incorreto<br>
+              <input type="checkbox" id="motivo2" class="reason-checkbox"> Cliente não encontrado<br>
+              <input type="checkbox" id="motivo3" class="reason-checkbox"> Produto fora de estoque<br>
+            </div>
+            <button type="button" class="btn btn-danger mt-2" id="confirmRejectionButton" style="display: none;">Confirmar Rejeição</button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" id="rejectOrderButton">Rejeitar</button>
+          <button type="button" class="btn btn-success" id="acceptOrderButton">Aceitar</button>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
 
-<div class="footer">
-    <h3>Pedidos Cancelados ou Entregues</h3>
-    <div id="lista-finalizados"></div>
-</div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
 
-<script>
     const apiUrl = 'http://127.0.0.1:5151'
-
     const token = localStorage.getItem('token')
-    if (!token) {
-
-        window.location.href = 'file:///Users/zeuser/Desktop/Estudos/Python/orders/pages/seller/login.html';
-    }
     
+
     document.onload = getOrders()
 
-    window.setInterval(getOrders, 20 * 1000)
+    window.setInterval(getOrders, 100 * 1000)
 
+    // Função para adicionar um novo pedido na coluna "Novos"
+    function addNewOrder(orderNumber, customerName, deliveryLocation, items, totalValue) {
+      const novosPedidos = document.getElementById('novosPedidos');
+      const noNewOrdersMessage = document.getElementById('noNewOrdersMessage');
+      
+      // Remover a mensagem de "Nenhum pedido pendente" se houver pedidos
+      if (noNewOrdersMessage) {
+        noNewOrdersMessage.style.display = 'none';
+      }
+
+      // Criar o card do pedido
+      const orderCard = document.createElement('div');
+      orderCard.classList.add('order-card');
+
+      // Preencher o conteúdo do card
+      orderCard.innerHTML = `
+        <strong>${orderNumber}</strong><br>
+        <strong>Cliente:</strong> ${customerName}<br>
+        <strong>Localização:</strong> ${deliveryLocation}<br>
+        <strong>Itens:</strong> ${items}<br>
+        <strong>Valor Total:</strong> R$ ${totalValue}
+      `;
+
+      // Adicionar evento de clique no card para exibir o modal
+      orderCard.addEventListener('click', () => showOrderDetails(orderNumber, customerName, deliveryLocation, items, totalValue, true));
+
+      // Adicionar o card à coluna de "Novos"
+      novosPedidos.appendChild(orderCard);
+
+      // Atualizar o contador de pedidos novos
+      const newOrdersCount = novosPedidos.getElementsByClassName('order-card').length;
+      novosPedidos.querySelector('h4').innerText = `Novos (${newOrdersCount})`;
+    }
+
+    function addInTransitOrder(orderNumber, customerName, deliveryLocation, items, totalValue) {
+      const novosPedidos = document.getElementById('inTransit');
+      const noNewOrdersMessage = document.getElementById('noNewOrdersMessage');
+      
+      // Remover a mensagem de "Nenhum pedido pendente" se houver pedidos
+      if (noNewOrdersMessage) {
+        noNewOrdersMessage.style.display = 'none';
+      }
+
+      // Criar o card do pedido
+      const orderCard = document.createElement('div');
+      orderCard.classList.add('order-card');
+
+      // Preencher o conteúdo do card
+      orderCard.innerHTML = `
+        <strong>${orderNumber}</strong><br>
+        <strong>Cliente:</strong> ${customerName}<br>
+        <strong>Localização:</strong> ${deliveryLocation}<br>
+        <strong>Itens:</strong> ${items}<br>
+        <strong>Valor Total:</strong> R$ ${totalValue}
+      `;
+
+      // Adicionar evento de clique no card para exibir o modal
+      orderCard.addEventListener('click', () => showOrderDetails(orderNumber, customerName, deliveryLocation, items, totalValue, true));
+
+      // Adicionar o card à coluna de "Novos"
+      novosPedidos.appendChild(orderCard);
+
+      // Atualizar o contador de pedidos novos
+      const newOrdersCount = novosPedidos.getElementsByClassName('order-card').length;
+      novosPedidos.querySelector('h4').innerText = `Novos (${newOrdersCount})`;
+    }
+
+    // Função para mostrar os detalhes do pedido no modal
+    function showOrderDetails(orderNumber, customerName, deliveryLocation, items, totalValue, accept = false) {
+      // Preencher os detalhes no modal
+      document.getElementById('modalOrderNumber').innerText = orderNumber;
+      document.getElementById('modalCustomerName').innerText = customerName;
+      document.getElementById('modalDeliveryLocation').innerText = deliveryLocation;
+      document.getElementById('modalItems').innerText = items;
+      document.getElementById('modalTotalValue').innerText = totalValue;
+
+      // Resetar os checkboxes e esconder o botão de confirmação de rejeição
+      const checkboxes = document.querySelectorAll('.reason-checkbox');
+      checkboxes.forEach(checkbox => checkbox.checked = false);
+      document.getElementById('confirmRejectionButton').style.display = 'none';
+
+      if (!accept) document.getElementById('acceptOrderButton').style.display = 'None'
+      else document.getElementById('acceptOrderButton').style.display = 'Block'
+
+      // Mostrar o modal
+      const orderModal = new bootstrap.Modal(document.getElementById('orderModal'));
+      orderModal.show();
+    }
+
+    // Função para rejeitar o pedido
+    document.getElementById('rejectOrderButton').addEventListener('click', () => {
+      document.getElementById('rejectReasons').style.display = 'block';
+    });
+
+    // Mostrar botão de confirmação de rejeição quando um motivo for selecionado
+    document.querySelectorAll('.reason-checkbox').forEach(checkbox => {
+      checkbox.addEventListener('change', () => {
+        const anyChecked = Array.from(document.querySelectorAll('.reason-checkbox')).some(checkbox => checkbox.checked);
+        document.getElementById('confirmRejectionButton').style.display = anyChecked ? 'block' : 'none';
+      });
+    });
+
+    // Função para confirmar rejeição e mover para "Pedidos Finalizados"
+    document.getElementById('confirmRejectionButton').addEventListener('click', () => {
+      const orderNumber = document.getElementById('modalOrderNumber').innerText;
+
+      rejectOrder(orderNumber)
+      
+      // Fechar o modal
+      const orderModal = bootstrap.Modal.getInstance(document.getElementById('orderModal'));
+      orderModal.hide();
+
+      // Remover o card da coluna "Novos"
+      removeOrderFromNew(orderNumber);
+    });
+
+    // Função para aceitar o pedido e mover para a coluna "Em separação"
+    document.getElementById('acceptOrderButton').addEventListener('click', () => {
+
+      const orderNumber = document.getElementById('modalOrderNumber').innerText;
+
+      acceptOrder(orderNumber)
+
+      const customerName = document.getElementById('modalCustomerName').innerText;
+      const deliveryLocation = document.getElementById('modalDeliveryLocation').innerText;
+      const items = document.getElementById('modalItems').innerText;
+      const totalValue = document.getElementById('modalTotalValue').innerText;
+
+      const emSeparacao = document.getElementById('emSeparacao');
+
+      addAcceptdOrder(orderNumber, customerName, deliveryLocation, items, totalValue)
+
+      // Remover o card da coluna "Novos"
+      removeOrderFromNew(orderNumber);
+
+      // Fechar o modal
+      const orderModal = bootstrap.Modal.getInstance(document.getElementById('orderModal'));
+      orderModal.hide();
+    });
+
+    function addFinished(orderNumber, status) {
+      // Criar um card menor para "Pedidos Finalizados"
+      const finishedCard = document.createElement('div');
+      if (status == 'DELIVERED') {
+        finishedCard.classList.add('delivered-order-card');
+
+        finishedCard.innerHTML = `
+          <strong>${orderNumber}</strong> <br>
+          Pedido entregue <span style="color: green;">&#x2713;</span>
+        `;
+      } else if(status == 'REJECTED') {
+        finishedCard.classList.add('finished-order-card');
+
+        finishedCard.innerHTML = `
+          <strong>${orderNumber}</strong> <br>
+          Você rejeitou este pedido <span style="color: red;">&#10006;</span>
+        `;
+      }
+
+      // Adicionar o card à coluna "Pedidos Finalizados"
+      document.getElementById('finalizadosPedidos').appendChild(finishedCard);
+    }
+
+    // Função para remover o card da coluna "Novos"
+    function removeOrderFromNew(orderNumber) {
+      const novosPedidos = document.getElementById('novosPedidos');
+      const orderCards = novosPedidos.getElementsByClassName('order-card');
+
+      for (let card of orderCards) {
+        if (card.innerHTML.includes(`${orderNumber}`)) {
+          card.remove();
+          break;
+        }
+      }
+
+      // Atualizar o contador de pedidos novos
+      const newOrdersCount = novosPedidos.getElementsByClassName('order-card').length;
+      novosPedidos.querySelector('h4').innerText = `Novos (${newOrdersCount})`;
+
+      // Se não houver mais pedidos, mostrar a mensagem "Nenhum pedido pendente"
+      if (newOrdersCount === 0) {
+        document.getElementById('noNewOrdersMessage').style.display = 'block';
+      }
+    }
+    
+    function removeOrderFromSeparacao(orderNumber) {
+      const emSeparacao = document.getElementById('emSeparacao');
+      const orderCards = emSeparacao.getElementsByClassName('order-card');
+
+      for (let card of orderCards) {
+        if (card.innerHTML.includes(`${orderNumber}`)) {
+          card.remove();
+          break;
+        }
+      }
+
+      // Atualizar o contador de pedidos novos
+      const newOrdersCount = emSeparacao.getElementsByClassName('order-card').length;
+      emSeparacao.querySelector('h4').innerText = `Novos (${newOrdersCount})`;
+
+      // Se não houver mais pedidos, mostrar a mensagem "Nenhum pedido pendente"
+      if (newOrdersCount === 0) {
+        document.getElementById('noNewOrdersMessage').style.display = 'block';
+      }
+    }
+
+    function addAcceptdOrder(orderNumber, customerName, deliveryLocation, items, totalValue) {
+      const emSeparacao = document.getElementById('emSeparacao')
+      // Criar o card do pedido para "Em Separação"
+      const orderCard = document.createElement('div');
+      orderCard.classList.add('order-card');
+      orderCard.innerHTML = `
+        <strong>${orderNumber}</strong><br>
+        <strong>Cliente:</strong> ${customerName}<br>
+        <strong>Localização:</strong> ${deliveryLocation}<br>
+        <strong>Itens:</strong> ${items}<br>
+        <strong>Valor Total:</strong> R$ ${totalValue}
+      `;
+
+      // Adicionar o card à coluna de "Em Separação"
+      emSeparacao.appendChild(orderCard);
+      orderCard.addEventListener('click', () => showOrderDetails(orderNumber, customerName, deliveryLocation, items, totalValue));
+
+      // Atualizar o contador de pedidos "Em Separação"
+      const inProgressOrdersCount = emSeparacao.getElementsByClassName('order-card').length;
+      emSeparacao.querySelector('h4').innerText = `Em separação (${inProgressOrdersCount})`;
+    }
+
+    function clearOrders(selector) {
+      const element = document.getElementById(selector).getElementsByClassName('order-card')
+      const element2 = document.getElementById(selector).getElementsByClassName('finished-order-card')
+      const element3 = document.getElementById(selector).getElementsByClassName('delivered-order-card')
+      while(element.length > 0){
+        element[0].parentNode.removeChild(element[0]);
+      }
+      while(element2.length > 0){
+        element2[0].parentNode.removeChild(element2[0]);
+      }
+      while(element3.length > 0){
+        element3[0].parentNode.removeChild(element3[0]);
+      }
+    }
+    
     function getOrders() {
-        
         fetch(apiUrl + '/sellers/orders/', 
             {headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`},
                 method: 'GET', 
             })
         .then(response => {
             if (response.status == 401) {
-                window.location.href = 'file:///Users/zeuser/Desktop/Estudos/Python/orders/pages/seller/login.html'
+                window.location.href = 'file:///Users/zeuser/Desktop/Estudos/Python/order-delivery-api/pages/seller/login.html'
             }
             return response.json();
         }).then(data => {
-            console.log(data)
-            renderizarPedidos(data)
 
+            clearOrders('emSeparacao')
+            clearOrders('novosPedidos')
+            clearOrders('finalizadosPedidos')
+            clearOrders('inTransit')
+
+            console.log(data)
+
+            const pendings = data.data.pending
+            pendings.forEach((pending) => {
+              const items = pending.items
+              let itemString = ''
+              let totalValue = 0.0
+              items.forEach((item) => {
+                itemString += `${item.amount}x ${item.name} `
+                totalValue += item.amount * item.price
+              })
+              addNewOrder(pending.number, pending.consumer, pending.address.full_address, itemString, totalValue);
+            })
+
+            const accepteds = data.data.accepted
+            accepteds.forEach((accepted) => {
+              const items = accepted.items
+              let itemString = ''
+              let totalValue = 0.0
+              items.forEach((item) => {
+                itemString += `${item.amount}x ${item.name} `
+                totalValue += item.amount * item.price
+              })
+              addAcceptdOrder(accepted.number, accepted.consumer, accepted.address.full_address, itemString, totalValue);
+            })
+
+            const finalizeds = data.data.finalized
+            finalizeds.forEach((finalized) => {
+              addFinished(finalized.number, finalized.status)
+            })
+
+            const inTransits = data.data.in_transit
+            inTransits.forEach((in_transit) => {
+              const items = in_transit.items
+              let itemString = ''
+              let totalValue = 0.0
+              items.forEach((item) => {
+                itemString += `${item.amount}x ${item.name} `
+                totalValue += item.amount * item.price
+              })
+              addInTransitOrder(in_transit.number, in_transit.consumer, in_transit.address.full_address, itemString, totalValue);
+            })
         }).catch(err => {
             console.log(err)
         });
     }
-
+  
     function acceptOrder(order) {
         fetch(apiUrl + '/sellers/orders/' + order, 
             {
@@ -131,18 +528,17 @@
             })
         .then(response => {
             if (response.status == 401) {
-                window.location.href = 'file:///Users/zeuser/Desktop/Estudos/Python/orders/pages/seller/login.html'
+                window.location.href = 'file:///Users/zeuser/Desktop/Estudos/Python/order-delivery-api/pages/seller/login.html'
             }
             return response.json();
         }).then(data => {
-            // renderizarPedidos(data)
             getOrders()
 
         }).catch(err => {
             // Do something fr an error here
         });
-    }
-
+      }
+  
     function rejectOrder(order) {
         fetch(apiUrl + '/sellers/orders/' + order, 
             {
@@ -152,7 +548,7 @@
             })
         .then(response => {
             if (response.status == 401) {
-                window.location.href = 'file:///Users/zeuser/Desktop/Estudos/Python/orders/pages/seller/login.html'
+                window.location.href = 'file:///Users/zeuser/Desktop/Estudos/Python/order-delivery-api/pages/seller/login.html'
             }
             return response.json();
         }).then(data => {
@@ -163,80 +559,6 @@
             // Do something fr an error here
         });
     }
-
-    function renderizarPedidos(pedidos) {
-        const listaNovos = document.getElementById('lista-novos');
-        const listaAceitos = document.getElementById('lista-aceitos');
-        const listaCaminho = document.getElementById('lista-caminho');
-        const listaFinalizados = document.getElementById('lista-finalizados');
-        
-        // Limpa as listas antes de renderizar novamente
-        listaNovos.innerHTML = '';
-        listaAceitos.innerHTML = '';
-        listaCaminho.innerHTML = '';
-        listaFinalizados.innerHTML = '';
-
-        document.getElementById('new-orders').innerHTML = `Novos (${pedidos.pending.length})`
-        pedidos.pending.forEach((pedido) => {
-            const pedidoDiv = document.createElement('div');
-            pedidoDiv.className = 'pedido-item';
-            pedidoDiv.innerHTML = `<span>Nº ${pedido.number}</span>`;
-            pedidoDiv.innerHTML += `<span>${pedido.address.full_address}</span>`;
-
-            pedido.items.forEach((item) => {
-                pedidoDiv.innerHTML += `<span>${item.amount}x ${item.name}</span>`;
-            })
-
-            const aceitarBtn = document.createElement('button');
-            aceitarBtn.innerText = 'Aceitar';
-            aceitarBtn.onclick = () => aceitarPedido(pedido.number);
-            pedidoDiv.appendChild(aceitarBtn);
-            listaNovos.appendChild(pedidoDiv);
-
-        })
-
-        document.getElementById('preparing-orders').innerHTML = `Em separação (${pedidos.accepted.length})`
-        pedidos.accepted.forEach((pedido) => {
-            const pedidoDiv = document.createElement('div');
-            pedidoDiv.className = 'pedido-item';
-            pedidoDiv.innerHTML = `<span>${pedido.number}</span>`;
-            pedidoDiv.innerHTML += `<span>${pedido.address.full_address}</span>`;
-
-            pedido.items.forEach((item) => {
-                pedidoDiv.innerHTML += `<span>${item.amount}x ${item.name}</span>`;
-            })
-
-            const caminhoBtn = document.createElement('button');
-            caminhoBtn.innerText = 'Cancelar';
-            caminhoBtn.onclick = () => rejeitarPedido(pedido);
-            pedidoDiv.appendChild(caminhoBtn);
-            listaAceitos.appendChild(pedidoDiv);
-        })
-
-        document.getElementById('in-transit-orders').innerHTML = `Entregas em andamento (${pedidos.in_transit.length})`
-        pedidos.in_transit.forEach((pedido) => {
-            const pedidoDiv = document.createElement('div');
-            pedidoDiv.className = 'pedido-item';
-            pedidoDiv.innerHTML = `<span>${pedido.number}</span>`;
-            listaCaminho.appendChild(pedidoDiv);
-        })
-
-        pedidos.finalized.forEach((pedido) => {
-            const pedidoDiv = document.createElement('div');
-            pedidoDiv.className = 'pedido-item';
-            pedidoDiv.innerHTML = `<span>${pedido.number} (${pedido.status})</span>`;
-            listaFinalizados.appendChild(pedidoDiv);
-        })
-    }
-
-    function aceitarPedido(order) {
-        acceptOrder(order)
-    }
-
-    function rejeitarPedido(order) {
-        rejectOrder(order.number)
-    }
-</script>
-
+  </script>
 </body>
 </html>

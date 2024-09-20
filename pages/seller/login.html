@@ -102,10 +102,10 @@
             // Verifica se o login foi bem-sucedido
             if (response.ok) {
                 // Salva o token no LocalStorage
-                localStorage.setItem('token', data.access_token);
-
+                localStorage.setItem('token', data.data.access_token);
+                
                 // Redireciona o usuário para outra página, por exemplo, para a home
-                window.location.href = 'file:///Users/zeuser/Desktop/Estudos/Python/orders/pages/seller/index.html';
+                window.location.href = 'file:///Users/zeuser/Desktop/Estudos/Python/order-delivery-api/pages/seller/index.html';
             } else {
                 // Exibe a mensagem de erro recebida da API
                 errorMessage.textContent = data.message || 'Erro ao fazer login. Tente novamente.';

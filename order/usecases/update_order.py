@@ -55,7 +55,7 @@ class UpdateOrder:
 
     def __can_transit_to_status(self, current_status: str, next_status: str) -> bool:
         allowed_transitions = {
-            "PENDING": ["ACCEPTED"],
+            "PENDING": ["ACCEPTED", "REJECTED"],
             "ACCEPTED": ["CONFIRMED", "REJECTED"],
             "CONFIRMED": ["IN_TRANSIT", "PENDING"],
             "IN_TRANSIT": ["ORDER_IN_TRANSIT"],

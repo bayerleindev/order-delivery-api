@@ -32,8 +32,8 @@ class OrderList(Resource):
             return order, 201
         except OrderException as error:
             abort(500, message=error.message)
-        finally:
-            logger.info("Remain calm! %s", consumer)
+        # finally:
+        #     logger.info("Remain calm! %s", consumer)
 
 
 class Order(Resource):

@@ -23,19 +23,19 @@ class AssignOrderToCourier:
                 coordinates,
                 order_number,
             )
+        else:
+            OrderRepository().assign_couriers(
+                order_number,
+                [
+                    courier.get("_id")
+                    for courier in couriers
+                    if courier.get("_id") is not None
+                ],
+            )
 
-        OrderRepository().assign_couriers(
-            order_number,
-            [
-                courier.get("_id")
-                for courier in couriers
-                if courier.get("_id") is not None
-            ],
-        )
-
-        send_email(
-            "Aceitar pedido {} ? - courier {}".format(
-                order_number, couriers[0].get("_id")
-            ),
-            "Novo pedido!",
-        )
+            send_email(
+                "Aceitar pedido {} ? - courier {}".format(
+                    order_number, couriers[0].get("_id")
+                ),
+                "Novo pedido!",
+            )
