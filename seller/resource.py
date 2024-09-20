@@ -57,11 +57,7 @@ class SellerOrders(Resource):
 
     @jwt_required()
     def get(self):
-        try:
-            return GetOrders().execute(seller_id=get_jwt_identity())
-        except Exception as e:
-            print(e)
-        abort(403)
+        return GetOrders().execute(seller_id=get_jwt_identity())
 
 
 def init(api: Api):

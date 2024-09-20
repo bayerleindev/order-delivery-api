@@ -11,9 +11,9 @@ class GetOrders:
             LoadOrder().execute(order.number)
             for order in FilterOrder()
             .execute(seller_id=id)
-            .filter(OrderModel.created_at >= datetime.now() - timedelta(hours=2))
+            .filter(OrderModel.created_at >= datetime.now() - timedelta(hours=10))
             .filter(OrderModel.created_at <= datetime.now())
-            .order_by(OrderModel.created_at.desc())
+            .order_by(OrderModel.updated_at.desc())
             .all()
         ]
         result = {"pending": [], "in_transit": [], "finalized": [], "accepted": []}
