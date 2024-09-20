@@ -100,7 +100,6 @@
             const data = await response.json();
 
             if (response.ok) {
-                // Salva o token no LocalStorage
                 localStorage.setItem('courier_token', data.access_token);
 
                 // Redireciona o usuário para outra página, por exemplo, para a home
