@@ -423,13 +423,34 @@
       // Criar o card do pedido para "Em Separação"
       const orderCard = document.createElement('div');
       orderCard.classList.add('order-card');
-      orderCard.innerHTML = `
-        <strong>${orderNumber}</strong><br>
-        <strong>Cliente:</strong> ${customerName}<br>
-        <strong>Localização:</strong> ${deliveryLocation}<br>
-        <strong>Itens:</strong> ${items}<br>
-        <strong>Valor Total:</strong> R$ ${totalValue}
-      `;
+      
+      const orderNumberNode = document.createElement('strong');
+      orderNumberNode.appendChild(document.createTextNode(orderNumber));
+      orderCard.appendChild(orderNumberNode);
+      orderCard.appendChild(document.createElement('br'));
+      
+      const customerNameNode = document.createElement('strong');
+      customerNameNode.appendChild(document.createTextNode('Cliente: '));
+      orderCard.appendChild(customerNameNode);
+      orderCard.appendChild(document.createTextNode(customerName));
+      orderCard.appendChild(document.createElement('br'));
+      
+      const deliveryLocationNode = document.createElement('strong');
+      deliveryLocationNode.appendChild(document.createTextNode('Localização: '));
+      orderCard.appendChild(deliveryLocationNode);
+      orderCard.appendChild(document.createTextNode(deliveryLocation));
+      orderCard.appendChild(document.createElement('br'));
+      
+      const itemsNode = document.createElement('strong');
+      itemsNode.appendChild(document.createTextNode('Itens: '));
+      orderCard.appendChild(itemsNode);
+      orderCard.appendChild(document.createTextNode(items));
+      orderCard.appendChild(document.createElement('br'));
+      
+      const totalValueNode = document.createElement('strong');
+      totalValueNode.appendChild(document.createTextNode('Valor Total: '));
+      orderCard.appendChild(totalValueNode);
+      orderCard.appendChild(document.createTextNode(`R$ ${totalValue}`));
 
       // Adicionar o card à coluna de "Em Separação"
       emSeparacao.appendChild(orderCard);
