@@ -22,6 +22,7 @@ class TestIntegration:
     def order_repository(self):
         return OrderRepository()
 
+
     def test_create_order(self, order_repository):
         confirmation_code_cache["seller@test"] = True
         confirmation_code_cache["integration@test"] = True
