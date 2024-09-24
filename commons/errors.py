@@ -1,4 +1,11 @@
 ERROR_MESSAGES = {
+    "UNEXPECTED_ERROR": {
+        "pt": {
+            "code": "0",
+            "message": "Erro inesperado.",
+            "details": "Erro inesperado.",
+        }
+    },
     "USER_EXISTS": {
         "pt": {
             "code": "1",
@@ -39,6 +46,27 @@ ERROR_MESSAGES = {
             "code": "6",
             "message": "Seller inválido.",
             "details": "Seller inválido.",
+        }
+    },
+    "EMAIL_NOT_VERIFIED": {
+        "pt": {
+            "code": "7",
+            "message": "E-mail não verificado.",
+            "details": "E-mail não verificado.",
+        }
+    },
+    "WRONG_VERIFICATION_CODE": {
+        "pt": {
+            "code": "8",
+            "message": "Código de verificação errado.",
+            "details": "Código de verificação errado.",
+        }
+    },
+    "DOCUMENT_EXISTS": {
+        "pt": {
+            "code": "8",
+            "message": "Documento já cadastrado.",
+            "details": "Documento já cadastrado.",
         }
     },
 }
