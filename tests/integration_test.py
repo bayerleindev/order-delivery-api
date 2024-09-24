@@ -1,4 +1,5 @@
 from typing import Any
+from auth.auth import confirmation_code_cache
 from consumer.usecases.create_user import CreateUser
 from courier.usecases.create_courier import CreateCourier
 from order.repository import OrderRepository
@@ -22,12 +23,16 @@ class TestIntegration:
         return OrderRepository()
 
     def test_create_order(self, order_repository):
+        confirmation_code_cache["seller@test"] = True
+        confirmation_code_cache["integration@test"] = True
+        confirmation_code_cache["courier@test"] = True
+
         seller = CreateSeller().execute(
             document="123",
             name="Integration Test",
             latitude="0",
             longitude="0",
-            email="seller@test2",
+            email="seller@test",
             password="1234",
         )
 
@@ -47,10 +52,11 @@ class TestIntegration:
             document="123",
             name="Integration",
             last_name="Test",
-            email="integration@test2",
+            email="integration@test",
             phone="",
             password="1234",
         )
+
         input = Input(
             seller_id=seller.id,
             consumer_id=consumer.id,
@@ -76,7 +82,7 @@ class TestIntegration:
 
     def test_add_order_to_route(self):
         pytest.courier = CreateCourier().execute(
-            email="integration@test",
+            email="courier@test",
             password="test",
             name="Integration",
             last_name="Test",
