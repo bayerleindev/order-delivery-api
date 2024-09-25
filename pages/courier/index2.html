@@ -208,15 +208,17 @@
                 // Cria o card do pedido
                 var orderCard = document.createElement('div');
                 orderCard.classList.add('order-card');
-                orderCard.innerHTML = `
+                var orderContent = `
                     <button class="remove-btn">&times;</button>
-                    <p><strong>Número do Pedido:</strong> ${orderKey}</p>
+                    <p><strong>Número do Pedido:</strong> </p>
                     <p><strong>Cliente:</strong> João Silva</p>
                     <p><strong>Localização:</strong> Rua Exemplo, 123</p>
                     <p><strong>Itens:</strong> 2x Águas</p>
                     <p><strong>Total:</strong> R$ 100,00</p>
                     <p class="status-label">Status: Em andamento</p>
                 `;
+                orderCard.innerHTML = orderContent;
+                orderCard.querySelector('p strong').nextSibling.textContent = orderKey;
 
                 // Adiciona à lista de pedidos
                 document.getElementById('orderList').appendChild(orderCard);
