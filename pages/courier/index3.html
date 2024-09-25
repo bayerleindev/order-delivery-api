@@ -231,6 +231,13 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
+        // Função para escapar caracteres especiais de HTML
+        function escapeHTML(str) {
+            var div = document.createElement('div');
+            div.appendChild(document.createTextNode(str));
+            return div.innerHTML;
+        }
+
         // Função para adicionar um pedido à lista
         document.getElementById('addOrderBtn').addEventListener('click', function () {
             var orderKey = document.getElementById('orderKeyInput').value;
@@ -244,7 +251,7 @@
                 orderCard.classList.add('order-card');
                 orderCard.innerHTML = `
                     <button class="remove-btn">&times;</button>
-                    <p><strong>${orderKey}</strong></p>
+                    <p><strong>${escapeHTML(orderKey)}</strong></p>
                     <p><strong>Cliente:</strong> João Silva</p>
                     <p><strong>Localização:</strong> Rua Exemplo, 123</p>
                     <p><strong>Itens:</strong> 2x Águas</p>
