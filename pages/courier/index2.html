@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedidos</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .input-group {
+            max-width: 500px;
+            margin: 20px auto;
+        }
+
+        .order-card {
+            position: relative;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+
+        .order-card.minimal {
+            padding: 10px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .order-card.minimal .remove-btn {
+            display: none;
+        }
+
+        .order-card .remove-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: #ff0000;
+            cursor: pointer;
+        }
+
+        .order-container {
+            max-width: 500px;
+            margin: 20px auto;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .order-list {
+            margin-top: 20px;
+        }
+
+        .empty-state {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .empty-state img {
+            width: 100px;
+            margin-bottom: 20px;
+        }
+
+        .exit-button {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #f8f9fa;
+            padding: 10px;
+            text-align: center;
+            display: none;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary.centered {
+            width: 200px;
+            margin: 0 auto;
+        }
+
+        /* Modal customization */
+        .modal-dialog {
+            max-width: 600px;
+        }
+
+        .card {
+            margin-bottom: 15px;
+            padding: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Cores para status */
+        .status-label {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .status-entregue {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .status-cancelado {
+            background-color: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h3 class="text-center">Pedidos</h3>
+
+        <!-- Input para chave do pedido -->
+        <div class="input-group mb-3">
+            <input id="orderKeyInput" type="text" class="form-control" placeholder="Chave do pedido" aria-label="Chave do pedido">
+            <div class="input-group-append">
+                <button id="addOrderBtn" class="btn btn-outline-secondary" type="button">Adicionar</button>
+            </div>
+        </div>
+
+        <!-- Container para a lista de pedidos -->
+        <div class="order-container">
+            <div class="order-list" id="orderList">
+                <!-- Os pedidos aparecerão aqui -->
+            </div>
+        </div>
+
+        <!-- Estado vazio -->
+        <div class="empty-state" id="emptyState">
+            <img src="https://via.placeholder.com/100" alt="Pedidos vazios">
+            <p>Não há pedidos ainda</p>
+            <p>Insira, pelo menos, uma chave de pedido para iniciar o envio.</p>
+        </div>
+
+        <!-- Botão Sair com pedidos (fixo no rodapé) -->
+        <div class="exit-button" id="exitWithOrdersBtnContainer">
+            <button id="exitWithOrdersBtn" class="btn btn-primary centered" type="button">Sair com pedidos</button>
+        </div>
+    </div>
+
+    <!-- Modal para exibir os detalhes do pedido -->
+    <div class="modal fade" id="orderModal" tabindex="-1" role="dialog" aria-labelledby="orderModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="orderModalLabel">Detalhes do Pedido</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="orderDetails">
+                        <!-- Conteúdo do modal será adicionado dinamicamente aqui -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para cancelar o pedido -->
+    <div class="modal fade" id="cancelModal" tabindex="-1" role="dialog" aria-labelledby="cancelModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cancelModalLabel">Motivo do Cancelamento</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <select id="cancelReason" class="form-control">
+                        <option value="cliente-cancelou">Cliente cancelou</option>
+                        <option value="produto-indisponivel">Produto indisponível</option>
+                        <option value="outro">Outro</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                    <button id="confirmCancelBtn" type="button" class="btn btn-danger">Confirmar Cancelamento</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // Função para adicionar um pedido à lista
+        document.getElementById('addOrderBtn').addEventListener('click', function () {
+            var orderKey = document.getElementById('orderKeyInput').value;
+
+            if (orderKey) {
+                // Oculta o estado vazio
+                document.getElementById('emptyState').style.display = 'none';
+
+                // Cria o card do pedido
+                var orderCard = document.createElement('div');
+                orderCard.classList.add('order-card');
+                var orderContent = `
+                    <button class="remove-btn">&times;</button>
+                    <p><strong>Número do Pedido:</strong> </p>
+                    <p><strong>Cliente:</strong> João Silva</p>
+                    <p><strong>Localização:</strong> Rua Exemplo, 123</p>
+                    <p><strong>Itens:</strong> 2x Águas</p>
+                    <p><strong>Total:</strong> R$ 100,00</p>
+                    <p class="status-label">Status: Em andamento</p>
+                `;
+                orderCard.innerHTML = orderContent;
+                orderCard.querySelector('p strong').nextSibling.textContent = orderKey;
+
+                // Adiciona à lista de pedidos
+                document.getElementById('orderList').appendChild(orderCard);
+
+                // Limpa o campo de input
+                document.getElementById('orderKeyInput').value = '';
+
+                // Mostra o botão "Sair com pedidos" se houver pedidos
+                document.getElementById('exitWithOrdersBtnContainer').style.display = 'block';
+
+                // Função para remover o pedido da lista
+                orderCard.querySelector('.remove-btn').addEventListener('click', function () {
+                    orderCard.remove();
+
+                    // Verifica se há mais pedidos, se não, volta para o estado vazio
+                    if (document.getElementById('orderList').childElementCount === 0) {
+                        document.getElementById('emptyState').style.display = 'block';
+                        document.getElementById('exitWithOrdersBtnContainer').style.display = 'none';
+                    }
+                });
+
+                // Adiciona evento de clique ao card para abrir o modal
+                orderCard.addEventListener('click', function () {
+                    showOrderModal(orderKey, orderCard);
+                });
+            }
+        });
+
+        // Função para exibir o modal com os detalhes do pedido e gerenciar o progresso da entrega
+        function showOrderModal(orderKey, orderCard) {
+        var orderDetails = document.getElementById('orderDetails');
+        orderDetails.innerHTML = `
+            <div class="card">
+                <h5>Endereço</h5>
+                <p>Rua Exemplo, 123</p>
+                <button class="btn btn-info">Abrir Mapa</button>
+            </div>
+            <div class="card">
+                <h5>Cliente</h5>
+                <p>João Silva</p>
+            </div>
+            <div class="card">
+                <h5>Produtos</h5>
+                <p>2x Águas</p>
+            </div>
+            <div class="card">
+                <h5>Valores</h5>
+                <p>Total: R$ 100,00</p>
+            </div>
+            <div class="card">
+                <button id="startDeliveryBtn" class="btn btn-success">Iniciar Entrega</button>
+                <button id="cancelDeliveryBtn" class="btn btn-danger">Cancelar Entrega</button>
+            </div>
+        `;
+
+        var startDeliveryBtn = document.getElementById('startDeliveryBtn');
+        var cancelDeliveryBtn = document.getElementById('cancelDeliveryBtn');
+        var statusLabel = orderCard.querySelector('.status-label');
+
+        // Lógica de progresso de entrega
+        startDeliveryBtn.addEventListener('click', function () {
+            if (startDeliveryBtn.innerText === 'Iniciar Entrega') {
+                startDeliveryBtn.innerText = 'Cheguei';
+                statusLabel.innerText = 'Status: Em entrega';
+            } else if (startDeliveryBtn.innerText === 'Cheguei') {
+                startDeliveryBtn.innerText = 'Finalizar';
+            } else if (startDeliveryBtn.innerText === 'Finalizar') {
+                startDeliveryBtn.innerText = 'Entregue';
+                startDeliveryBtn.disabled = true;
+                startDeliveryBtn.classList.remove('btn-success');
+                startDeliveryBtn.classList.add('btn-secondary');
+                statusLabel.innerText = 'Status: Entregue';
+                statusLabel.classList.remove('status-em-andamento');
+                statusLabel.classList.add('status-entregue');
+            }
+        });
+
+        // Lógica para cancelar a entrega
+        cancelDeliveryBtn.addEventListener('click', function () {
+            $('#cancelModal').modal('show'); // Abre o modal de cancelamento
+
+            // Confirmação de cancelamento
+            document.getElementById('confirmCancelBtn').addEventListener('click', function () {
+                var cancelReason = document.getElementById('cancelReason').value;
+                $('#cancelModal').modal('hide'); // Fecha o modal de cancelamento
+
+                // Atualiza o status do pedido para "Cancelado" na lista
+                statusLabel.innerText = 'Status: Cancelado';
+                statusLabel.classList.remove('status-em-andamento');
+                statusLabel.classList.add('status-cancelado');
+            });
+        });
+
+        // Exibe o modal de detalhes do pedido
+        $('#orderModal').modal('show');
+    }
+
+    </script>
+</body>
+</html>

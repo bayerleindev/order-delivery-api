@@ -1,161 +1,295 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Usuário</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-            padding: 20px;
+            background-color: #f9f9f9;
+            font-family: 'Arial', sans-serif;
         }
-        h1 {
+
+        .container {
+            max-width: 400px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h3 {
+            font-weight: bold;
+            color: #e63946;
             text-align: center;
         }
-        form {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            margin: 0 auto;
-        }
+
         .form-group {
             margin-bottom: 15px;
         }
+
         label {
-            display: block;
             font-weight: bold;
-            margin-bottom: 5px;
         }
-        input[type="text"], input[type="email"], input[type="number"], input[type="tel"] {
+
+        .btn-primary {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .form-row {
-            display: flex;
-            gap: 10px;
-        }
-        .form-row .form-group {
-            flex: 1;
-        }
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #28a745;
-            color: white;
+            background-color: #e63946;
             border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
+            margin-top: 15px;
         }
-        button:hover {
-            background-color: #218838;
+
+        .btn-primary:hover {
+            background-color: #d62828;
+        }
+
+        .btn-secondary {
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        .success-message {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .success-message h3 {
+            margin-bottom: 20px;
+        }
+
+        .success-message img {
+            width: 100px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
 
-<h1>Cadastro de Usuário</h1>
+    <div class="container">
+        <h3>Cadastro</h3>
 
-<form id="cadastroForm" onsubmit="return cadastrarUsuario(event)">
-    <div class="form-group">
-        <label for="nome">Nome:</label>
-        <input type="text" id="nome" name="nome" required>
-    </div>
-    
-    <div class="form-group">
-        <label for="sobrenome">Sobrenome:</label>
-        <input type="text" id="sobrenome" name="sobrenome" required>
-    </div>
-    
-    <div class="form-group">
-        <label for="cpf">CPF:</label>
-        <input type="tel" id="cpf" name="cpf" required pattern="\d{3}\.\d{3}\.\d{3}-\d{2}" placeholder="000.000.000-00">
-    </div>
-    
-    <div class="form-group">
-        <label for="email">E-mail:</label>
-        <input type="email" id="email" name="email" required>
-    </div>
-    
-    <h3>Endereço</h3>
-    
-    <div class="form-group">
-        <label for="estado">Estado:</label>
-        <input type="text" id="estado" name="estado" required>
-    </div>
-    
-    <div class="form-group">
-        <label for="cidade">Cidade:</label>
-        <input type="text" id="cidade" name="cidade" required>
-    </div>
-    
-    <div class="form-group">
-        <label for="bairro">Bairro:</label>
-        <input type="text" id="bairro" name="bairro" required>
-    </div>
-    
-    <div class="form-group">
-        <label for="rua">Rua:</label>
-        <input type="text" id="rua" name="rua" required>
-    </div>
-    
-    <div class="form-row">
-        <div class="form-group">
-            <label for="numero">Número:</label>
-            <input type="text" id="numero" name="numero" required>
+        <!-- Step 1: Email -->
+        <div class="step active" id="stepEmail">
+            <div class="form-group">
+                <label for="email">Digite seu e-mail:</label>
+                <input type="email" class="form-control" id="email" placeholder="email@exemplo.com">
+            </div>
+            <button class="btn btn-primary" id="btnNextEmail">Próximo</button>
         </div>
-        <div class="form-group">
-            <label for="complemento">Complemento:</label>
-            <input type="text" id="complemento" name="complemento">
+
+        <!-- Step 2: Código de confirmação -->
+        <div class="step" id="stepCode">
+            <div class="form-group">
+                <label for="code">Digite o código enviado para seu e-mail:</label>
+                <input type="text" class="form-control" id="code" placeholder="Código de 6 dígitos">
+            </div>
+            <button class="btn btn-primary" id="btnNextCode">Verificar Código</button>
+        </div>
+
+        <!-- Step 3: Documento -->
+        <div class="step" id="stepCpf">
+            <div class="form-group">
+                <label for="cpf">Digite seu CPF:</label>
+                <input type="text" class="form-control" id="cpf" placeholder="000.000.000-00" maxlength="14">
+            </div>
+            <button class="btn btn-primary" id="btnNextCpf">Validar CPF</button>
+        </div>
+
+        <!-- Step 4: Informações pessoais -->
+        <div class="step" id="stepPersonalInfo">
+            <div class="form-group">
+                <label for="firstName">Nome:</label>
+                <input type="text" class="form-control" id="firstName" placeholder="Nome">
+            </div>
+            <div class="form-group">
+                <label for="lastName">Sobrenome:</label>
+                <input type="text" class="form-control" id="lastName" placeholder="Sobrenome">
+            </div>
+            <div class="form-group">
+                <label for="phone">Telefone:</label>
+                <input type="tel" class="form-control" id="phone" placeholder="(00) 00000-0000" maxlength="15">
+            </div>
+            <div class="form-group">
+                <label for="password">Senha:</label>
+                <input type="password" class="form-control" id="password" placeholder="Digite sua senha">
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Confirme sua senha:</label>
+                <input type="password" class="form-control" id="confirmPassword" placeholder="Confirme sua senha">
+            </div>
+            <button class="btn btn-primary" id="btnSubmit">Finalizar Cadastro</button>
+        </div>
+
+        <!-- Step 5: Sucesso -->
+        <div class="step" id="stepSuccess">
+            <div class="success-message">
+                <img src="https://via.placeholder.com/100" alt="Sucesso">
+                <h3>Cadastro Completo!</h3>
+                <p>Seu cadastro foi realizado com sucesso.</p>
+            </div>
         </div>
     </div>
-    
-    <div class="form-group">
-        <label for="cep">CEP:</label>
-        <input type="text" id="cep" name="cep" required pattern="\d{5}-\d{3}" placeholder="00000-000">
-    </div>
-    
-    <button type="submit">Cadastrar</button>
-</form>
 
-<script>
-    function cadastrarUsuario(event) {
-        event.preventDefault();  // Evita o recarregamento da página
-        
-        const form = document.getElementById('cadastroForm');
-        const formData = new FormData(form);
+    <script>
+        // Função para avançar para o próximo passo
+        function nextStep(currentStep, nextStep) {
+            document.getElementById(currentStep).classList.remove('active');
+            document.getElementById(nextStep).classList.add('active');
+        }
 
-        const user = {};
-        formData.forEach((value, key) => {
-            user[key] = value;
+        // Step 1: Verificar email e avançar
+        document.getElementById('btnNextEmail').addEventListener('click', function () {
+            var email = document.getElementById('email').value;
+            if (email) {
+                sendVerificationCode(email)
+                    .then(response => {
+                        console.log(response)
+                        if (response.error) alert(response.error.message)
+                        else nextStep('stepEmail', 'stepCode');
+                    })
+                    .catch(error => {
+                        console.log(error)
+                    })
+            } else {
+                alert('Por favor, insira um e-mail válido.');
+            }
         });
 
-        // Exibir os dados no console (substitua isso pela lógica de envio para a API)
-        console.log('Usuário cadastrado:', user);
-
-        // alert('Cadastro realizado com sucesso!');
-
-        // Aqui você pode fazer a requisição para a API com os dados do usuário.
-        // Exemplo:
-        fetch('/api/cadastrar', {
-            method: 'POST',
-            body: JSON.stringify(user),
-            headers: {
-                'Content-Type': 'application/json'
+        // Step 2: Verificar código e avançar
+        document.getElementById('btnNextCode').addEventListener('click', function () {
+            var code = document.getElementById('code').value;
+            var email = document.getElementById('email').value;
+            if (code.length === 6) {
+                verifyEmail(email, code)
+                    .then(response => {
+                        if (response.error) alert(response.error.message)
+                        else nextStep('stepCode', 'stepCpf');
+                    })
+                
+            } else {
+                alert('Por favor, insira um código válido.');
             }
-        })
-        .then(response => response.json())
-        .then(data => console.log(data))
-        .catch(error => console.error(error));
+        });
 
-        return false;
-    }
-</script>
+        // Step 3: Validar CPF e avançar
+        document.getElementById('btnNextCpf').addEventListener('click', function () {
+            var cpf = document.getElementById('cpf').value;
+            var cpfRegex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
+            if (cpfRegex.test(cpf)) {
+                nextStep('stepCpf', 'stepPersonalInfo');
+            } else {
+                alert('Por favor, insira um CPF válido.');
+            }
+        });
+
+        // Step 4: Coletar informações pessoais, verificar senha e finalizar cadastro
+        document.getElementById('btnSubmit').addEventListener('click', function () {
+            var email = document.getElementById('email').value;
+            var code = document.getElementById('code').value;
+            var cpf = document.getElementById('cpf').value;
+            var firstName = document.getElementById('firstName').value;
+            var lastName = document.getElementById('lastName').value;
+            var phone = document.getElementById('phone').value;
+            var password = document.getElementById('password').value;
+            var confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (firstName && lastName && phone && password && confirmPassword) {
+                if (password !== confirmPassword) {
+                    alert('As senhas não coincidem.');
+                    return;
+                }
+                if (!validarSenha(password)) {
+                    alert('A senha deve ter no mínimo 8 caracteres, incluindo letras e números.');
+                    return;
+                }
+
+                createUser(email, cpf, firstName, lastName, phone, password)
+                    .then(response => {
+                        if (response.error) {
+                            alert(response.error.message)
+                        } else {
+                            nextStep('stepPersonalInfo', 'stepSuccess');
+                        }
+                    })
+            } else {
+                alert('Por favor, preencha todos os campos.');
+            }
+        });
+
+        // Função para aplicar máscara no campo de CPF
+        document.getElementById('cpf').addEventListener('input', function (e) {
+            var cpf = e.target.value.replace(/\D/g, ''); // Remove tudo que não for dígito
+            cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');   // Coloca ponto após o terceiro dígito
+            cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2');   // Coloca ponto após o sexto dígito
+            cpf = cpf.replace(/(\d{3})(\d{1,2})$/, '$1-$2'); // Coloca traço antes dos últimos dois dígitos
+            e.target.value = cpf; // Atualiza o campo de CPF com a máscara
+        });
+
+        // Função para aplicar máscara no campo de Telefone
+        document.getElementById('phone').addEventListener('input', function (e) {
+            var phone = e.target.value.replace(/\D/g, ''); // Remove tudo que não for dígito
+            phone = phone.replace(/(\d{2})(\d)/, '($1) $2'); // Coloca parênteses em torno dos dois primeiros dígitos
+            phone = phone.replace(/(\d{5})(\d{1,4})$/, '$1-$2'); // Coloca traço entre o quinto e o sexto dígitos
+            e.target.value = phone; // Atualiza o campo de Telefone com a máscara
+        });
+
+        async function createUser(email, cpf, name, lastName, phone, password) {
+            console.log(JSON.stringify({ name, last_name: lastName, email, phone, password }))
+            response = await fetch('http://127.0.0.1:5151/consumers/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name, document: cpf, last_name: lastName, email, phone, password })
+            });
+
+            return await response.json();
+        }
+
+        async function sendVerificationCode(email) {
+            response = await fetch('http://127.0.0.1:5151/send-confirmation-code', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email })
+            });
+
+            return await response.json();
+        }
+
+        async function verifyEmail(email, code) {
+            response = await fetch('http://127.0.0.1:5151/confirm-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email, confirmation_code: code })
+            });
+
+            return await response.json();
+        }
+
+        function validarSenha(password) {
+            // Expressão regular para verificar se a senha tem pelo menos 8 caracteres, letras e números
+            var senhaRegex = /^(?=.*[a-zA-Z])(?=.*[0-9]).{8,}$/;
+
+            if (!senhaRegex.test(password)) {
+                return false; // Senha não atende os requisitos
+            }
+            return true; // Senha válida
+        }
+    </script>
 
 </body>
 </html>
